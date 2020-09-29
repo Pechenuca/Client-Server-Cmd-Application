@@ -16,27 +16,32 @@ import java.nio.channels.ClosedChannelException;
 import java.util.List;
 
 public class ClientResponseHandler {
+
     private class ResponseReceiver extends Thread {
-        protected volatile Object recieveObject = null;
+
+        protected volatile Object receivedObject = null;
 
         @Override
         public void run() {
             while (true) {
                 try {
-                    recieveData();
+                    receiveData();
                 } catch (ClosedChannelException ignored) {
                 } catch (EOFException ex) {
-                    System.err.println("Достигнут лимит отправки данных");
-                    LOG.error("Достигнут лимит");
+                    System.err.println("Reached limit of data to receive");
+                    LOG.error("Reached Limit", ex);
                 } catch (IOException | ClassNotFoundException e) {
-                    LOG.error("I/O Problems");
+                    LOG.error("I/O Problems", e);
                 }
             }
         }
 
-        public void recieveData() throws IOException, ClassNotFoundException {
+        /**
+         * Функция для получения данных
+         */
+        public void receiveData() throws IOException, ClassNotFoundException {
             final ByteBuffer buf = ByteBuffer.allocate(AbsSocket.DATA_SIZE);
-            final SocketAddress addressFromServer = channel.recieveDatagramm(buf);
+            final SocketAddress addressFromServer = channel.receiveDatagram(buf);
             buf.flip();
 
             byte[] bytes = new byte[buf.remaining()];
@@ -44,15 +49,21 @@ public class ClientResponseHandler {
 
             if (bytes.length < 1)
                 return;
+
             synchronized (ClientResponseHandler.class) {
-                channel.setRequstSent(false);
+                channel.setRequestSent(false);
                 if (bytes.length < AbsSocket.DATA_SIZE)
-                recieveObject = processRespinse(bytes);
+                    receivedObject = processResponse(bytes);
                 else
-                throw new EOFException();
+                    throw new EOFException();
             }
         }
 
+        /**
+         * Функция для десериализации полученных данных
+         * @param petitionBytes - данные
+         * @return obj - объект десериализованных данных
+         */
         private Object processResponse(byte[] petitionBytes) throws IOException, ClassNotFoundException {
             try (ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(petitionBytes))) {
                 final Object obj = stream.readObject();
@@ -63,6 +74,7 @@ public class ClientResponseHandler {
             }
         }
     }
+
 
     protected static final Logger LOG = LogManager.getLogger(ClientResponseHandler.class);
     private final ResponseReceiver receiverThread;
@@ -78,40 +90,21 @@ public class ClientResponseHandler {
         receiverThread.start();
     }
 
-    public Object checkForResponse() {
+    public void checkForResponse() throws ClassNotFoundException {
         Object received = receiverThread.receivedObject;
 
-        final long start = System.currentTimeMillis();
-        while (channel.requestWasSent()) {
-            if (channel.requestWasSent() && System.currentTimeMillis() - start > 1500) {
-                LOG.error("Seems the server went down!");
-                channel.setConnectionToFalse();
-                return "The server is down, please check the connection";
-            }
-        }
-
-        if (received != null) {
+        if (received instanceof String && received.equals("connect")) {
             channel.setConnected(true);
-            /* In the case a weird user was put cheating, we logout */
-            if (received instanceof Credentials && ((Credentials)received).id == -1) {
-                //TODO: LOGOUT TO THE FIRST STAGE
-            }
+            LOG.info("Successfully connected to the server");
+            System.out.println("Successfully connected to the server");
         }
 
-        return received;
-    }
-
-    public void setReceivedObjectToNull() {
         synchronized (this) {
+            if (received != null)
+                printResponse(received);
+
             receiverThread.receivedObject = null;
         }
-    }
-
-    public void setCurrentUser(Credentials credentials) {
-        currentUser.setCredentials(credentials);
-    }
-    public CurrentUser getCurrentUser() {
-        return currentUser;
     }
 
     /**
@@ -149,14 +142,14 @@ public class ClientResponseHandler {
             return;
         }
         if (((List) obj).get(0) instanceof ListEntrySerializable) {
-            ((List<ListEntrySerializable>) obj).stream().forEach(e -> System.out.println("key:" + e.getKey() + " -> " + e.getDragon().toString()));
+            ((List<ListEntrySerializable>) obj).stream().forEach(e -> System.out.println("key:" + e.getKey() + " -> " + e.getOrganization().toString()));
             System.out.println("Elements found: "+ ((List) obj).size());
         }else {
             for (Object objFromScript: (List)obj) {
                 if (objFromScript instanceof String)
                     System.out.println(objFromScript);
                 else if (objFromScript instanceof List) {
-                    ((List<ListEntrySerializable>) objFromScript).stream().forEach(e -> System.out.println("key:" + e.getKey() + " -> " + e.getDragon().toString()));
+                    ((List<ListEntrySerializable>) objFromScript).stream().forEach(e -> System.out.println("key:" + e.getKey() + " -> " + e.getOrganization().toString()));
                     System.out.println("Elements found: "+ ((List) objFromScript).size());
                 }
             }
@@ -173,5 +166,3 @@ public class ClientResponseHandler {
         return receiverThread;
     }
 }
-
-

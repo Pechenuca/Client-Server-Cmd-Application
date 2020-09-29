@@ -1,10 +1,10 @@
 package javaProject.database;
 
+import javaProject.coreSources.Address;
 import javaProject.coreSources.Coordinates;
 import javaProject.coreSources.Organization;
 import javaProject.coreSources.OrganizationType;
-import javafx.scene.paint.Color;
-import sun.security.krb5.internal.CredentialsUtil;
+
 
 import java.sql.*;
 import java.time.ZoneId;
@@ -33,25 +33,26 @@ public class CollectionModel {
                     rs.getInt("id"),
                     rs.getString("name"),
                     rs.getString("fullName"),
-                    rs.getString("address"),
                     new Coordinates(rs.getLong("x")), rs.getFloat("y"),
-                    rs.getLong("age"), creationDate,
-                    OrganizationType.valueOf(rs.toString("type"))
+                    rs.getLong("creationDate"), creationDate,
+                    OrganizationType.valueOf(rs.getString("organizationType")),
+                    rs.
 
-                    collection.putIfAbsent(rs.getInt("key"), organization));
+                    collection.putIfAbsent(rs.getInt("key"), organization);
         }
         return collection;
     }
 
-    public boolean hasPermissions(Credentials credentials, int dragonID) throws SQLException {
+    public boolean hasPermissions(Credentials credentials, int organizationID) throws SQLException {
         if (credentials.username.equals(UserModel.ROOT_USERNAME))
             return true;
 
         PreparedStatement preparedStatement = connection.prepareStatement(SQLQuery.Get.USER_HAS_PERMISSIONS);
         int pointer = 0;
         preparedStatement.setInt(++pointer, credentials.id);
-        preparedStatement.setInt(++pointer, dragonID);
+        preparedStatement.setInt(++pointer, organizationID);
         ResultSet rs = preparedStatement.executeQuery();
+
         if (rs.next()) {
             return rs.getBoolean("exists");
         }
@@ -69,10 +70,10 @@ public class CollectionModel {
             int pointer = 0;
             preparedStatement.setString(++pointer, organization.getName());
             preparedStatement.setTimestamp(++pointer, Timestamp.valueOf(organization.getCreationDate().toLocalDateTime()));
-            preparedStatement.setLong(++pointer, organization.getAge());
-            preparedStatement.setInt(++pointer, organization.getColor().ordinal()+1);
+            preparedStatement.setLong(++pointer, organization.getAnnualTurnover());
+            preparedStatement.setO(++pointer, organization.getOfficialAddress());
             preparedStatement.setInt(++pointer, organization.getType().ordinal()+1);
-            preparedStatement.setInt(++pointer, organization.getCharacter().ordinal()+1);
+            preparedStatement.setString(++pointer, organization.getFullName());
             preparedStatement.setInt(++pointer, key);
             ResultSet rs = preparedStatement.executeQuery();
             int organizationID = 0;
@@ -86,7 +87,7 @@ public class CollectionModel {
             preparedStatement.setInt(++pointer, organizationID);
             preparedStatement.executeUpdate();
 
-            preparedStatement = connection.prepareStatement(SQLQuery.Add.DRAGON_HEAD);
+          /*  preparedStatement = connection.prepareStatement(SQLQuery.Add.DRAGON_HEAD);
             pointer = 0;
             if (organization.getHead().getEyesCount() == null)
                 preparedStatement.setNull(++pointer, Types.DOUBLE);
@@ -95,13 +96,14 @@ public class CollectionModel {
             preparedStatement.setInt(++pointer, organizationID);
             preparedStatement.executeUpdate();
 
-            preparedStatement = connection.prepareStatement(SQLQuery.Add.DRAGON_USER_RELATIONSHIP);
+            preparedStatement = connection.prepareStatement(SQLQuery.Add.ORGANIZATION_USER_RELATIONSHIP);
             pointer = 0;
             preparedStatement.setInt(++pointer, credentials.id);
             preparedStatement.setInt(++pointer, organizationID);
             preparedStatement.executeUpdate();
 
             connection.commit();
+            */
 
             return String.valueOf(organizationID);
         } catch (Throwable e) {
@@ -123,14 +125,14 @@ public class CollectionModel {
         try {
             connection.setAutoCommit(false);
 
-            PreparedStatement preparedStatement = connection.prepareStatement(SQLQuery.Update.DRAGON);
+            PreparedStatement preparedStatement = connection.prepareStatement(SQLQuery.Update.ORGANIZATION);
             int pointer = 0;
             preparedStatement.setString(++pointer, organization.getName());
             preparedStatement.setTimestamp(++pointer, Timestamp.valueOf(organization.getCreationDate().toLocalDateTime()));
-            preparedStatement.setLong(++pointer, organization.getAge());
-            preparedStatement.setInt(++pointer, organization.getColor().ordinal()+1);
+            preparedStatement.setLong(++pointer, organization.getAnnualTurnover());
+            preparedStatement.setLong(++pointer, Address.valueOf(organization.getOfficialAddress()));
             preparedStatement.setInt(++pointer, organization.getType().ordinal()+1);
-            preparedStatement.setInt(++pointer, organization.getCharacter().ordinal()+1);
+            preparedStatement.setInt(++pointer, organization.getType().ordinal()+1);
             preparedStatement.setInt(++pointer, id);
             preparedStatement.executeUpdate();
 
@@ -141,12 +143,8 @@ public class CollectionModel {
             preparedStatement.setInt(++pointer, id);
             preparedStatement.executeUpdate();
 
-            preparedStatement = connection.prepareStatement(SQLQuery.Update.DRAGON_HEAD);
-            pointer = 0;
-            if (organization.getHead().getEyesCount() == null)
-                preparedStatement.setNull(++pointer, Types.DOUBLE);
-            else
-                preparedStatement.setDouble(++pointer, organization.getHead().getEyesCount());
+
+
             preparedStatement.setInt(++pointer, id);
             preparedStatement.executeUpdate();
 
@@ -196,8 +194,8 @@ public class CollectionModel {
 
 
     public String delete(int key, Credentials credentials) throws SQLException {
-        int dragonID = getDragonByKey(key);
-        if (!hasPermissions(credentials, dragonID))
+        int organizationID = getDragonByKey(key);
+        if (!hasPermissions(credentials, organizationID))
             return "You have no permissions to delete this dragon";
 
         mainLock.lock();

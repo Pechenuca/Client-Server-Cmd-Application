@@ -2,6 +2,7 @@ package javaProject;
 
 
 public class Main {
+
     public static void main( String[] args) {
         String mode = System.getProperty("mode").toLowerCase();
         if (mode.equals("client"))

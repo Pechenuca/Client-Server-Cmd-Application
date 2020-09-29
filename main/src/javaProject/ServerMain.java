@@ -1,28 +1,17 @@
 package javaProject;
 
-import javaProject.command.ExecutionContext;
-import javaProject.network.ServerRequestHandler;
-import javaProject.network.ServerSocket;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import javax.xml.bind.JAXBException;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import java.net.SocketException;
-
-import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
-import java.util.NoSuchElementException;
+import org.apache.logging.log4j.Logger;
 
 public class ServerMain {
+
     private static final Logger LOG = LogManager.getLogger(ServerMain.class);
 
     public static void main(String[] args) {
+        /*
+         * port and server config
+         * */
         InetSocketAddress address = null;
-        ServerSocket socket = null;
+        ServerUdpSocket socket = null;
         try {
             final int port = Integer.parseInt(args[0]);
             address = new InetSocketAddress(port);
@@ -36,26 +25,41 @@ public class ServerMain {
             System.exit(-1);
         }
 
-        try {
-            socket = new ServerSocket(address);
+        /*
+         * database config
+         * */
+        final DatabaseConfigurer dbConfigurer = new DatabaseConfigurer();
+        if (dbConfigurer.needReadProperties())
+            dbConfigurer.readCustomProperties();
+        else
+            dbConfigurer.loadProperties();
+        dbConfigurer.setConnection();
 
-            final FileManager fileManager = new FileManager(Paths.get(args[1]).toAbsolutePath().toString());
-            final CollectionManager collectionManager = new CollectionManager(fileManager.getCollectionFromFile());
-            StringBuilder stringBuilder = new StringBuilder();
+        /*
+         * receiver and data handler config
+         * */
+        try {
+            socket = new ServerUdpSocket(address);
+
+            final CollectionModel collectionModel = new CollectionModel(dbConfigurer.getDbConnection());
+            final UserModel userModel = new UserModel(dbConfigurer.getDbConnection());
+            final CollectionController controller = new CollectionController(collectionModel, userModel);
+
+            final FileManager fileManager = new FileManager();
+            final CollectionManager collectionManager = new CollectionManager(controller.fetchCollectionFromDB());
+
             final ExecutionContext executionContext = new ExecutionContext() {
                 @Override
                 public CollectionManager collectionManager() {
                     return collectionManager;
                 }
-
+                @Override
+                public CollectionController collectionController() {
+                    return controller;
+                }
                 @Override
                 public FileManager fileManager() {
                     return fileManager;
-                }
-
-                @Override
-                public StringBuilder result() {
-                    return stringBuilder;
                 }
             };
             final ServerRequestHandler requestManager = new ServerRequestHandler(socket, executionContext);
@@ -63,43 +67,33 @@ public class ServerMain {
             if (socket.getSocket().isBound()) {
                 LOG.info("Socket Successfully opened on " + address);
                 System.out.println("Socket Successfully opened on " + address);
-            } else {
+            }
+            else {
                 LOG.error("Strange behaviour trying to bind the server");
                 System.err.println("Strange behaviour trying to bind the server");
                 System.exit(-1);
             }
 
+            //create shutdown hook with anonymous implementation
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                try {
-                    requestManager.disconnect();
-                    executionContext.fileManager().SaveCollectionInXML(
-                            executionContext.collectionManager().getCollection());
-                    System.out.println("All elements of collection saved into the file!");
-                } catch (JAXBException | IOException e) {
-                    System.err.println("problem saving the collection in file, check logs");
-                    LOG.error("problem saving the collection in file", e);
-                }
+                requestManager.disconnect();
+                dbConfigurer.disconnect();
             }));
 
+            requestManager.receiveFromWherever();
+
             while (socket.getSocket().isBound()) {
-                requestManager.receiveFromWherever();
             }
 
-        } catch (SocketException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        } catch (ArrayIndexOutOfBoundsException | InvalidPathException | SecurityException ex) {
-            System.err.println("Invalid file's path or/and security problem trying to access it");
-            LOG.error("Invalid file's path or/and security problem trying to access it", ex);
-        } catch (JAXBException ex) {
-            System.err.println("Problem processing the data from/into the file: " + ex.getMessage());
-            LOG.error("Problem processing the data from/into the file", ex);
-        } catch (IOException ex) {
-            System.err.println("I/O problems: " + ex.getMessage());
-            LOG.error("I/O problems", ex);
+        } catch (IOException | SQLException ex) {
+            System.err.println("Problems: " + ex.getMessage() + "\nCheck logs for details");
+            LOG.error("Severe Issue",ex);
         } catch (NoSuchElementException ex) {
             System.err.println("You wrote something strange");
-            LOG.error("You wrote something strange", ex);
+            LOG.error("You wrote something strange",ex);
+        } catch (JAXBException ex) {
+            System.err.println("Error initialing the Parser");
+            LOG.error("Error initialing the Parser", ex);
         }
     }
 }

@@ -1,23 +1,21 @@
 package javaProject;
 
-
-
+import javaProject.database.Credentials;
+import javaProject.database.CurrentUser;
+import javaProject.exception.AuthorizationException;
 import javaProject.exception.NoSuchCommandException;
 import javaProject.network.ClientChannel;
+import javaProject.network.ClientResponseHandler;
 import javaProject.network.CommandReader;
 import javaProject.util.IHandlerInput;
 import javaProject.util.UserInputHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
-import javax.xml.bind.JAXBException;
-import java.io.EOFException;
 import java.io.IOException;
-import java.net.*;
+import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.util.NoSuchElementException;
-
 
 public class ClientMain {
 
@@ -51,48 +49,41 @@ public class ClientMain {
             System.exit(-1);
         }
 
-        IHandlerInput userInputHandler = (IHandlerInput) new UserInputHandler(true);
+        CurrentUser currentUser = new CurrentUser(new Credentials(-1, "default", ""));
+        System.out.println("Logged as the 'default' user, please use login command");
+
+        IHandlerInput userInputHandler = new UserInputHandler(true);
         CommandManager manager = new CommandManager();
         CommandReader reader = new CommandReader(channel, manager, userInputHandler);
+        ClientResponseHandler responseHandler = new ClientResponseHandler(channel, currentUser);
 
-        while (true) {
+        while(true) {
             try {
                 if (channel.isConnected())
-                    reader.startInteraction();
+                    reader.startInteraction(currentUser.getCredentials());
                 else
                     channel.tryToConnect(address);
 
+                responseHandler.checkForResponse();
+
                 final long start = System.currentTimeMillis();
                 while (channel.requestWasSent()) {
-                    Object received = channel.receiveData();
-
-                    if (received instanceof String) {
-                        if (received.equals("connect")) {
-                            channel.setConnected(true);
-                            LOG.info("Successfully connected to the server");
-                            System.out.println("Successfully connected to the server");
-                        }
-                    }
-
-                    if (received != null)
-                        channel.printObj(received);
-
                     if (channel.requestWasSent() && System.currentTimeMillis() - start > 1000) {
+                        System.out.println("Seems the server went down!");
                         channel.setConnectionToFalse();
                         break;
                     }
                 }
-            } catch (NoSuchCommandException ex) {
+
+            } catch (NoSuchCommandException | AuthorizationException ex) {
                 System.out.println(ex.getMessage());
             } catch (NoSuchElementException ex) {
                 reader.finishClient();
+                responseHandler.finishReceiver();
             } catch (ClosedChannelException ignored) {
-            } catch (ArrayIndexOutOfBoundsException ex) {
+            }catch (ArrayIndexOutOfBoundsException ex) {
                 System.err.println("No argument passed");
-            } catch (EOFException ex) {
-                System.err.println("Reached limit of data to receive");
-                LOG.error("Reached Limit", ex);
-            } catch (IOException | ClassNotFoundException | JAXBException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 System.err.println("I/O Problems, check logs");
                 LOG.error("I/O Problems", e);
             }
