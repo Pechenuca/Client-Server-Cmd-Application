@@ -1,6 +1,7 @@
 package javaProject.database;
 
 import javaProject.coreSources.Organization;
+import javaProject.exception.AuthorizationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,19 +63,19 @@ public class DBManager {
         }
     }
 
-    public String addDragon(int key, Organization organization, Credentials credentials) {
+    public String addOrganization(int key, Organization organization, Credentials credentials) {
         try {
             if (assertUserNotExist(credentials))
                 throw new AuthorizationException();
 
-            return collectionModel.insert(key, dragon, credentials);
+            return collectionModel.insert(key, organization, credentials);
         } catch (Throwable ex) {
             LOG.error("inserting dragon in db", ex);
             return ex.getMessage();
         }
     }
 
-    public String updateDragon(int id, Organization organization, Credentials credentials) {
+    public String updateOrganization(int id, Organization organization, Credentials credentials) {
         try {
             if (assertUserNotExist(credentials))
                 throw new AuthorizationException();
@@ -86,7 +87,7 @@ public class DBManager {
         }
     }
 
-    public String deleteAllDragons(Credentials credentials) {
+    public String deleteAllOrganizations(Credentials credentials) {
         try {
             if (assertUserNotExist(credentials))
                 throw new AuthorizationException();
@@ -98,7 +99,7 @@ public class DBManager {
         }
     }
 
-    public String deleteDragon(int key, Credentials credentials) {
+    public String deleteOrganization(int key, Credentials credentials) {
         try {
             if (assertUserNotExist(credentials))
                 throw new AuthorizationException();
@@ -110,18 +111,18 @@ public class DBManager {
         }
     }
 
-    public int[] deleteDragonsGreaterThanKey(int key, Credentials credentials) throws SQLException, NoSuchAlgorithmException {
+    public int[] deleteOrganizationsGreaterThanKey(int key, Credentials credentials) throws SQLException, NoSuchAlgorithmException {
         if (assertUserNotExist(credentials))
             throw new AuthorizationException();
 
-        return collectionModel.deleteOnKey(key, credentials, SQLQuery.Delete.DRAGONS_WITH_GREATER_KEY);
+        return collectionModel.deleteOnKey(key, credentials, SQLQuery.Delete.ORGANIZATION_WITH_GREATER_KEY);
     }
 
-    public int[] deleteDragonsLowerThanKey(int key, Credentials credentials) throws SQLException, NoSuchAlgorithmException {
+    public int[] deleteOrganizationsLowerThanKey(int key, Credentials credentials) throws SQLException, NoSuchAlgorithmException {
         if (assertUserNotExist(credentials))
             throw new AuthorizationException();
 
-        return collectionModel.deleteOnKey(key, credentials, SQLQuery.Delete.DRAGONS_WITH_LOWER_KEY);
+        return collectionModel.deleteOnKey(key, credentials, SQLQuery.Delete.ORGANIZATIONS_WITH_LOWER_KEY);
     }
 
     public boolean assertUserNotExist(Credentials credentials) throws SQLException, NoSuchAlgorithmException {

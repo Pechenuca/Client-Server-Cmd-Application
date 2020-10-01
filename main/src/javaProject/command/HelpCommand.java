@@ -1,7 +1,9 @@
 package javaProject.command;
 
-import java.util.Set;
+import javaProject.database.Credentials;
 
+import java.io.IOException;
+import java.util.Set;
 public class HelpCommand extends Command {
 
     public final String description = "";
@@ -17,9 +19,11 @@ public class HelpCommand extends Command {
     }
 
     @Override
-    public Object execute(ExecutionContext context) {
+    public Object execute(ExecutionContext context, Credentials credentials) throws IOException {
         StringBuilder s = new StringBuilder();
-        s.append("Some Commands for you! \n").append(this.keysCommands.toString()).append("\nWrite man {key} to have some details");
+        s.append("Some Commands for you! \n");
+        this.keysCommands.forEach(e -> s.append("- ").append(e).append("\n"));
+        s.append("\nWrite man {key} to have some details");
         return s.toString();
     }
 

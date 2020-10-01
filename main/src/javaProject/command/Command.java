@@ -7,16 +7,15 @@ import java.util.Arrays;
 
 public abstract class Command implements ICommand, Serializable {
 
-    private static final long serialVersionUID = 2901644046809010785L;
     protected String commandKey;
     protected String description = "No Description";
     protected String[] args;
-    protected boolean requireInputs = false;
 
     public Command() {}
     public Command(String[] args) {
         this.args = args;
     }
+
     public String getCommandKey() {
         return commandKey;
     }
@@ -30,26 +29,37 @@ public abstract class Command implements ICommand, Serializable {
 
     /**
      *
-     * Создает объект класса Organization для передачи его серверу
+     * Создает объект класса dragon для передачи его серверу
      *
-     *
-     *
+     * @param obj in order to set the input required by the command called
      */
-    public void addOrgInput(Organization organization) {
+    public void addInput(Object obj) {
         //
     }
+
     /**
      *
      * Определяет, нужен ли данной команде дополнительный ввод объекта класса dragon
      *
-     *
      * @return true если ввод необходим, иначе false
      */
-    public boolean requireOrgInput() {
-        return requireInputs;
+    public int requireInput() {
+        return TYPE_NO_INPUT;
     }
-    public Organization getOrganization() {
+
+    public Object getInput() {
         return null;
+    }
+
+    public boolean isNumeric(String strNum) {
+        if (strNum == null)
+            return false;
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -57,6 +67,7 @@ public abstract class Command implements ICommand, Serializable {
         return this.getClass().getSimpleName() +
                 "{" +
                 "args=" + Arrays.toString(args) +
+                "organization=" + getInput() +
                 '}';
     }
 }

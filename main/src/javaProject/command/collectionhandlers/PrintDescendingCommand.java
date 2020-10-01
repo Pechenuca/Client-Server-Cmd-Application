@@ -1,8 +1,9 @@
 package javaProject.command.collectionhandlers;
 
-
 import javaProject.command.Command;
 import javaProject.command.ExecutionContext;
+import javaProject.database.Credentials;
+import javaProject.database.UserModel;
 import javaProject.util.ListEntrySerializable;
 
 import java.io.IOException;
@@ -16,8 +17,12 @@ public class PrintDescendingCommand extends Command {
     }
 
     @Override
-    public Object execute(ExecutionContext context) throws IOException {
-        context.result().setLength(0);
+    public Object execute(ExecutionContext context, Credentials credentials) throws IOException {
+
+        if (context.collectionController().credentialsNotExist(credentials))
+            return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
+
+        StringBuilder sb = new StringBuilder();
         List<ListEntrySerializable> sortedOrganizations = null;
 
         switch (args[0]) {
@@ -34,17 +39,16 @@ public class PrintDescendingCommand extends Command {
                 //System.out.println("Sorting by Name...");
                 sortedOrganizations = context.collectionManager().sortByName();
                 break;
-
             case "-d":
                 //System.out.println("Sorting by Creation Date...");
                 sortedOrganizations = context.collectionManager().sortByCreationDate();
                 break;
             default:
-                context.result().append("This option is not available. Correct= -{k/i/n/d}");
+                sb.append("This option is not available. Correct= -{k/i/n/d}");
         }
         if (sortedOrganizations != null)
             return sortedOrganizations;
-        return context.result().toString();
+        return sb.toString();
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Coordinates implements Serializable {
 
 
+
     private Long x; //Значение поля должно быть больше -328, Поле не может быть null
     private Float y; //Поле не может быть null
     /**
@@ -24,8 +25,7 @@ public class Coordinates implements Serializable {
         this.setY(y);
     }
 
-    public Coordinates(long x) {
-    }
+
 
     public Long getX() {
         return x;
@@ -63,6 +63,6 @@ public class Coordinates implements Serializable {
 
     @Override
     public String toString() {
-        return "{" + this.getX() + "; " + this.getY() + "}";
+        return "[x=" + this.getX() + ", y=" + this.getY() + "]";
     }
 }

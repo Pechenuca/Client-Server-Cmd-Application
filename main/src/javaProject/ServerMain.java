@@ -1,6 +1,20 @@
 package javaProject;
 
+import javaProject.command.ExecutionContext;
+import javaProject.database.CollectionModel;
+import javaProject.database.DatabaseConfigurer;
+import javaProject.database.UserModel;
+import javaProject.network.ServerRequestHandler;
+import javaProject.network.ServerSocket;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.SocketException;
+import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 public class ServerMain {
 
@@ -11,7 +25,7 @@ public class ServerMain {
          * port and server config
          * */
         InetSocketAddress address = null;
-        ServerUdpSocket socket = null;
+        ServerSocket socket = null;
         try {
             final int port = Integer.parseInt(args[0]);
             address = new InetSocketAddress(port);
@@ -39,7 +53,7 @@ public class ServerMain {
          * receiver and data handler config
          * */
         try {
-            socket = new ServerUdpSocket(address);
+            socket = new ServerSocket(address);
 
             final CollectionModel collectionModel = new CollectionModel(dbConfigurer.getDbConnection());
             final UserModel userModel = new UserModel(dbConfigurer.getDbConnection());
@@ -61,6 +75,7 @@ public class ServerMain {
                 public FileManager fileManager() {
                     return fileManager;
                 }
+
             };
             final ServerRequestHandler requestManager = new ServerRequestHandler(socket, executionContext);
 

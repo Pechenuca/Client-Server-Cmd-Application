@@ -1,7 +1,6 @@
 package javaProject.coreSources;
 
 
-
 import javaProject.exception.FieldException;
 import javaProject.util.ZonedDateTimeSerializer;
 
@@ -11,12 +10,12 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+
 
 
 @XmlRootElement(name = "organization")
 @XmlAccessorType(XmlAccessType.FIELD)
-    public class Organization implements Comparable<Organization>, Serializable {
+public class Organization implements Comparable<Organization>, Serializable {
     private int id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null
@@ -27,7 +26,7 @@ import java.time.format.DateTimeFormatter;
     private OrganizationType type; //Поле не может быть null
     private Address officialAddress; //Поле не может быть null
 
-    public Organization(int id, String name, Long x, Float y, Coordinates coordinates, ZonedDateTime creationDate, Long annualTurnover, String fullName, OrganizationType type, Address officialAddress) throws JAXBException {
+    public Organization(Integer id, String name, Long x, Float y, Coordinates coordinates, ZonedDateTime creationDate, Long annualTurnover, String fullName, OrganizationType type, Address officialAddress) throws JAXBException {
         this.id = id;
         this.name = name;
         this.coordinates = new Coordinates(x, y);
@@ -35,18 +34,35 @@ import java.time.format.DateTimeFormatter;
         this.annualTurnover = annualTurnover;
         this.fullName = fullName;
         this.type = type;
-        this.officialAddress = new Address();
+        this.officialAddress = officialAddress;
     }
-    public Organization() {
+
+    public Organization(Integer id, String name, Coordinates coordinates, Long annualTurnover, String fullName, OrganizationType type, Address officialAddress) {
         this.setCreationDate();
     }
 
-    public Organization(String name, Coordinates coordinates, String fullName, Long annualTurnover, Address address, OrganizationType oType) {
+    public Organization(String name, Coordinates coordinates,
+                        String fullName, Long annualTurnover,
+                        Address address, OrganizationType oType) {
         this.name = name;
         this.creationDate = ZonedDateTime.now();
         this.annualTurnover = annualTurnover;
         this.fullName = fullName;
-        this.officialAddress = new Address();
+        this.officialAddress = address;
+    }
+
+
+
+    public Organization(Integer id,
+                        String name,
+                        Coordinates coordinates,
+                        Long annualTurnover,
+                        ZonedDateTime creationDate,
+                        String fullName,
+                        OrganizationType type,
+                        Address officialAddress) {
+        this(id, name, coordinates, annualTurnover, fullName, type, officialAddress);
+        this.creationDate = creationDate;
     }
 
 
@@ -66,9 +82,6 @@ import java.time.format.DateTimeFormatter;
         return coordinates;
     }
 
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
-    }
 
     public ZonedDateTime getCreationDate() {
         return creationDate;
@@ -77,47 +90,32 @@ import java.time.format.DateTimeFormatter;
     public void setCreationDate() {
         this.creationDate = ZonedDateTime.now();
     }
-    public String getFormattedCDate() {
-        return this.getCreationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy-HH:mm:ss.SSS-z"));
-    }
+
+
     public Long getAnnualTurnover() {
         return annualTurnover;
     }
 
-    public void setAnnualTurnover(Long annualTurnover) {
-        this.annualTurnover = annualTurnover;
-    }
 
     public String getFullName() {
         return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public OrganizationType getType() {
-        return type;
-    }
-
-    public void setType(OrganizationType type) {
-        this.type = type;
     }
 
     public Address getOfficialAddress() {
         return officialAddress;
     }
 
-    public void setOfficialAddress(Address officialAddress) {
-        this.officialAddress = officialAddress;
+    public OrganizationType getType() {
+        return type;
     }
+
 
     @Override
     public int compareTo(Organization organization) {
         long difference = this.getCreationDate().compareTo(organization.getCreationDate());
 
-        if(difference > 0) return 1;
-        else if(difference < 0) return -1;
+        if (difference > 0) return 1;
+        else if (difference < 0) return -1;
         else return 0;
     }
 
@@ -147,6 +145,7 @@ import java.time.format.DateTimeFormatter;
         result += this.getCoordinates().hashCode();
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Organization)) return false;

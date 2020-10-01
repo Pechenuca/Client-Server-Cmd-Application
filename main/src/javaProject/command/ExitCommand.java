@@ -1,5 +1,7 @@
 package javaProject.command;
 
+import javaProject.database.Credentials;
+
 import java.io.IOException;
 
 public class ExitCommand extends Command {
@@ -10,7 +12,7 @@ public class ExitCommand extends Command {
     }
 
     @Override
-    public Object execute(ExecutionContext context) throws IOException {
+    public Object execute(ExecutionContext context, Credentials credentials) throws IOException {
         return null;
     }
 

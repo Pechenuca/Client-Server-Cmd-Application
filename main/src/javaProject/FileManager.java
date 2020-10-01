@@ -22,16 +22,15 @@ public class FileManager {
     private final JAXBContext xmlContext;
     private final Marshaller jaxbMarshaller;
     private final Unmarshaller jaxbUnmarshaller;
-    private final File xmlOrgs;
+    private File xmlOrganizations;
 
     public FileManager() throws JAXBException {
         xmlContext = JAXBContext.newInstance(CollectionMapper.class);
         jaxbMarshaller = xmlContext.createMarshaller();
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         jaxbUnmarshaller = xmlContext.createUnmarshaller();
-        xmlOrgs = null;
+        xmlOrganizations = null;
     }
-
 
     /**
      * Конструктор - создает объект класса FileManager
@@ -39,35 +38,15 @@ public class FileManager {
      * @throws FileNotFoundException В случае если файл нельзя найти.
      */
     public FileManager(String dataFilePath) throws FileNotFoundException, JAXBException {
-
-        if (dataFilePath == null || !(new File(dataFilePath).exists())) {
-
+        this();
+        if (dataFilePath == null || !(new File(dataFilePath).exists()))
             throw new FileNotFoundException("There is not such file!");
-        } else this.xmlOrgs = new File(dataFilePath);
-
-
-        xmlContext = JAXBContext.newInstance(CollectionMapper.class);
-        jaxbMarshaller = xmlContext.createMarshaller();
-        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        jaxbUnmarshaller = xmlContext.createUnmarshaller();
+        else
+            xmlOrganizations = new File(dataFilePath);
     }
 
-    /**
-     * Функция сохранения коллекции в формате xml в файл
-     * @param collection - Хэшмэп, содержащий коллекцию экземпляров класса Organization
-     * @throws IOException
-     * @throws JAXBException
-     */
-    public void SaveCollectionInXML(HashMap<Integer, Organization> collection) throws IOException, JAXBException {
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.getXmlDragons())))) {
-            CollectionMapper orgsMap = new CollectionMapper();
-            orgsMap.setCollection(collection);
-            jaxbMarshaller.marshal(orgsMap, writer);
-        }
-
-    }
     public File assertFileIsUsable(String dataFilePath) throws InvalidPathException, IOException {
-
+        //try {
         String filePath = Paths.get(dataFilePath).toAbsolutePath().toString();
         File fileToRetrieve = new File(filePath);
         if (!fileToRetrieve.exists())
@@ -79,10 +58,41 @@ public class FileManager {
             throw new SecurityException();
 
         return fileToRetrieve;
+
+        /*}catch (ArrayIndexOutOfBoundsException | SecurityException ex) {
+            System.err.println("Invalid file's path or/and security problem trying to access it");
+            LOG.error("Invalid file's path or/and security problem trying to access it",ex);
+        } catch (JAXBException ex) {
+            System.err.println("Problem processing the data from/into the file: " + ex.getMessage());
+            LOG.error("Problem processing the data from/into the file",ex);
+        }*/
     }
+
+    /**
+     * Функция сохранения коллекции в формате xml в файл
+     * @param collection - Хэшмэп, содержащий коллекцию экземпляров класса Organization
+     * @throws IOException
+     * @throws JAXBException
+     */
+    public void SaveCollectionInXML(HashMap<Integer, Organization> collection) throws IOException, JAXBException {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.getXmlDragons())))) {
+            CollectionMapper organizationsMap = new CollectionMapper();
+            organizationsMap.setCollection(collection);
+            jaxbMarshaller.marshal(organizationsMap, writer);
+        }
+    }
+
+    public void SaveCollectionInXML(HashMap<Integer, Organization> collection, String fileName) throws IOException, InvalidPathException, JAXBException {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(assertFileIsUsable(fileName))))) {
+            CollectionMapper dragonsMap = new CollectionMapper();
+            dragonsMap.setCollection(collection);
+            jaxbMarshaller.marshal(dragonsMap, writer);
+        }
+    }
+
     /**
      * Функция получения коллекции из файла
-     * @return - возвращает collection - Хэшмэп, содержащий коллекцию экземпляров класса Organization
+     * @return - возвращает collection - Хэшмэп, содержащий коллекцию экземпляров класса Dragon
      */
     public HashMap<Integer, Organization> getCollectionFromFile() throws IOException, JAXBException {
         HashMap<Integer, Organization> collection = new HashMap<Integer, Organization>();
@@ -94,6 +104,7 @@ public class FileManager {
         }
         return collection;
     }
+
     /**
      * Функция получения коллекции из файла
      * @return - возвращает collection - Хэшмэп, содержащий коллекцию экземпляров класса Dragon
@@ -114,20 +125,11 @@ public class FileManager {
      * @param filePath - путь к файлу с данными
      * @return - возвращает dataStr - строку с данными
      */
-    public String getStrFromFile(String filePath) throws IOException {
-        File fileToRetrieve;
+    public String getStrFromFile(String filePath) throws IOException, InvalidPathException {
+        File fileToRetrieve = assertFileIsUsable(filePath);
+
         if (filePath.equals(""))
             fileToRetrieve = this.getXmlDragons();
-        else
-            fileToRetrieve = new File(filePath);
-
-        if (!fileToRetrieve.exists())
-            throw new FileNotFoundException("There is not such file!");
-        else if (fileToRetrieve.length() == 0)
-            throw new EmptyFileException("File is empty!");
-
-        if (!fileToRetrieve.canRead() || !fileToRetrieve.canWrite())
-            throw new SecurityException();
 
         String dataStr = "";
         try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(fileToRetrieve));
@@ -147,10 +149,10 @@ public class FileManager {
         return xmlContext;
     }
     public File getXmlDragons() {
-        return xmlOrgs;
+        return xmlOrganizations;
     }
 
-    @XmlRootElement(name="orgs_map")
+    @XmlRootElement(name="organizations_map")
     @XmlAccessorType(XmlAccessType.FIELD)
     private static class CollectionMapper {
         private HashMap<Integer, Organization> organizations = new HashMap<>();

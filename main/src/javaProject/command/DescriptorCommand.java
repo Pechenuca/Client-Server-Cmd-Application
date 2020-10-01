@@ -1,5 +1,8 @@
 package javaProject.command;
 
+import javaProject.database.Credentials;
+
+import java.io.IOException;
 import java.util.Map;
 
 public class DescriptorCommand extends Command {
@@ -12,11 +15,11 @@ public class DescriptorCommand extends Command {
     public DescriptorCommand(Map<String, Command> commandsDictionary) {
         this.commandsDictionary = commandsDictionary;
         commandKey = "man";
-        description = "Describe a main.main.managers.managers.command by its key";
+        description = "Describe a command by its key";
     }
 
     @Override
-    public Object execute(ExecutionContext context) {
+    public Object execute(ExecutionContext context, Credentials credentials) throws IOException {
         StringBuilder s = new StringBuilder();
         if (this.commandsDictionary.containsKey(args[0]))
             s.append("Command: ").append(args[0]).append("\n").append(this.commandsDictionary.get(args[0]).getDescription());

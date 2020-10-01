@@ -28,8 +28,9 @@ public class CommandManager {
         commands.put("remove_greater_key", new RemoveGreaterKeyCommand());
         commands.put("print_descending", new PrintDescendingCommand());
         commands.put("exit", new ExitCommand());
-        commands.put("execute_script", new ExecuteScriptCommand(getCommandsValues()));
-
+        commands.put("execute_script", new ExecuteScriptCommand(getCommandsValues()));;
+        commands.put("login", new LoginCommand());
+        commands.put("register", new RegisterCommand());
     }
 
     /**

@@ -75,7 +75,7 @@ public class CollectionController {
 
             return collectionModel.insert(key, organization, credentials);
         } catch (Throwable ex) {
-            LOG.error("inserting dragon in db", ex);
+            LOG.error("inserting organization in db", ex);
             return ex.getMessage();
         }
     }
@@ -87,7 +87,7 @@ public class CollectionController {
 
             return collectionModel.update(id, organization, credentials);
         } catch (Throwable ex) {
-            LOG.error("updating dragon in db", ex);
+            LOG.error("updating organization in db", ex);
             return ex.getMessage();
         }
     }
@@ -99,12 +99,12 @@ public class CollectionController {
 
             return collectionModel.deleteAll(credentials);
         } catch (Throwable ex) {
-            LOG.error("deleting all dragons in db", ex);
+            LOG.error("deleting all organizations in db", ex);
             return ex.getMessage();
         }
     }
 
-    public String deleteDragon(int key, Credentials credentials) {
+    public String deleteOrganization(int key, Credentials credentials) {
         try {
             if (assertUserNotExist(credentials))
                 throw new AuthorizationException();
@@ -116,18 +116,18 @@ public class CollectionController {
         }
     }
 
-    public int[] deleteDragonsGreaterThanKey(int key, Credentials credentials) throws SQLException, NoSuchAlgorithmException {
+    public int[] deleteOrganizationsGreaterThanKey(int key, Credentials credentials) throws SQLException, NoSuchAlgorithmException {
         if (assertUserNotExist(credentials))
             throw new AuthorizationException();
 
         return collectionModel.deleteOnKey(key, credentials, SQLQuery.Delete.ORGANIZATION_WITH_GREATER_KEY);
     }
 
-    public int[] deleteDragonsLowerThanKey(int key, Credentials credentials) throws SQLException, NoSuchAlgorithmException {
+    public int[] deleteOrganizationsLowerThanKey(int key, Credentials credentials) throws SQLException, NoSuchAlgorithmException {
         if (assertUserNotExist(credentials))
             throw new AuthorizationException();
 
-        return collectionModel.deleteOnKey(key, credentials, SQLQuery.Delete.ORGANIAZTION_WITH_LOWER_KEY);
+        return collectionModel.deleteOnKey(key, credentials, SQLQuery.Delete.ORGANIZATIONS_WITH_LOWER_KEY);
     }
 
     public boolean assertUserNotExist(Credentials credentials) throws SQLException, NoSuchAlgorithmException {

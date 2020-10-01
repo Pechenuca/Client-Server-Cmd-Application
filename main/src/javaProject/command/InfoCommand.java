@@ -1,5 +1,7 @@
 package javaProject.command;
 
+import javaProject.database.Credentials;
+
 public class InfoCommand extends Command {
 
     public InfoCommand() {
@@ -8,7 +10,7 @@ public class InfoCommand extends Command {
     }
 
     @Override
-    public Object execute(ExecutionContext context) {
+    public Object execute(ExecutionContext context, Credentials credentials) {
         return context.collectionManager().toString();
     }
 }

@@ -4,12 +4,16 @@ package javaProject.command.collectionhandlers;
 import javaProject.command.Command;
 import javaProject.command.ExecutionContext;
 import javaProject.coreSources.Organization;
+import javaProject.database.Credentials;
+import javaProject.database.UserModel;
+import javaProject.exception.AuthorizationException;
 import javaProject.exception.OrgFormatException;
+
+import java.io.IOException;
 
 
 public class ReplaceIfLowerCommand extends Command {
 
-    protected boolean requireInputs = true;
     protected Organization organization = null;
 
     public ReplaceIfLowerCommand() {
@@ -18,29 +22,44 @@ public class ReplaceIfLowerCommand extends Command {
     }
 
     @Override
-    public void addOrgInput(Organization organization) {
-        this.organization = organization;
+    public void addInput(Object organization) {
+        this.organization = (Organization) organization;
     }
 
     @Override
-    public Object execute(ExecutionContext context) {
-        context.result().setLength(0);
+    public Object execute(ExecutionContext context, Credentials credentials) throws IOException {
+        StringBuilder sb = new StringBuilder();
         if (organization == null)
             throw new OrgFormatException();
 
-        if (context.collectionManager().replaceIfLower(Integer.valueOf(args[0]), organization) != null)
-            context.result().append(organization.toString()).append(" replaced the young poor dragon!");
-        else
-            context.result().append("The key '").append(Integer.valueOf(args[0])).append("' doesn't exist or is not old enough!");
-        return context.result().toString();
+        int organizationID = context.collectionManager().isLowerAndGetID(Integer.valueOf(args[0]), organization);
+        if (organizationID > 0) {
+            //AuthorizationException happens when the credentials passed are wrong and the user was already logged
+            String resultOrganizationUpdated = "";
+            try {
+                resultOrganizationUpdated = context.collectionController().updateDragon(organizationID, organization, credentials);
+            } catch (AuthorizationException ex) {
+                return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
+            }
+
+
+            if (resultOrganizationUpdated == null) {
+                context.collectionManager().replaceIfLower(Integer.valueOf(args[0]), organization);
+                sb.append(organization.toString()).append(" replaced the young poor organization!");
+            } else
+                sb.append("Problems updating organization: ").append(resultOrganizationUpdated);
+        } else
+            sb.append("The given Organization is not old enough! or the key is wrong!");
+
+        return sb.toString();
     }
 
     @Override
-    public boolean requireOrgInput() {
-        return requireInputs;
+    public int requireInput() {
+        return TYPE_INPUT_ORGANIZATION;
     }
     @Override
-    public Organization getOrganization() {
+    public Object getInput() {
         return organization;
     }
 }

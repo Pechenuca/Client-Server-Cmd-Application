@@ -6,9 +6,9 @@ public class SQLQuery {
         public static final String ORGANIZATIONS = "SELECT organization.id, organization.name, organization.age, organizations.creation_date, organizations.key, coordinates.x, coordinates.y, organization_colors.color, organization_types.type, organization_characters.character, organization_heads.num_eyes\n" +
                 "FROM organizations\n" +
                 "    INNER JOIN coordinates ON organization.id = coordinates.organization_id\n" +
-                "    INNER JOIN organization_colors ON organization.color = organization_colors.id\n" +
+                //"    INNER JOIN organization_colors ON organization.color = organization_colors.id\n" +
                 "    INNER JOIN organization_types ON organization.type = organization_types.id\n";
-        public static final String DRAGON_BY_KEY = "SELECT id FROM organizations where key = ?";
+        public static final String ORGANIZATION_BY_KEY = "SELECT id FROM organizations where key = ?";
 
         //USERS
         public static final String USERS = "SELECT * FROM users";
@@ -47,16 +47,16 @@ public class SQLQuery {
         public static final String ORGANIZATION_BY_KEY = "DELETE FROM organizations where key = ?";
         public static final String ORGANIZATION_WITH_GREATER_KEY = "" +
                 "DELETE FROM organization \n" +
-                "WHERE id IN (SELECT o.id FROM organizations o, users u, users_dragons ud\n" +
+                "WHERE id IN (SELECT o.id FROM organizations o, users u, users_organizations ud\n" +
                 "             WHERE o.key > ?\n" +
-                "               AND ud.organization_id = d.id\n" +
-                "               AND ud.user_id in (select id from users where id = ?)) RETURNING key";
+                "               AND uo.organization_id = o.id\n" +
+                "               AND uo.user_id in (select id from users where id = ?)) RETURNING key";
         public static final String ORGANIZATIONS_WITH_LOWER_KEY = "" +
                 "DELETE FROM organizations \n" +
                 "WHERE id IN (SELECT o.id FROM organizations o, users u, users_organizations uo\n" +
                 "             WHERE o.key < ?\n" +
-                "               AND ud.organization_id = o.id\n" +
-                "               AND ud.user_id in (select id from users where id = ?)) RETURNING key";
+                "               AND uo.organization_id = o.id\n" +
+                "               AND uo.user_id in (select id from users where id = ?)) RETURNING key";
 
         public static final String USER = "DELETE FROM users where username = ?";
     }

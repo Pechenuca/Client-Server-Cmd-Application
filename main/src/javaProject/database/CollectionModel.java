@@ -27,18 +27,19 @@ public class CollectionModel {
         HashMap<Integer, Organization> collection = new HashMap<>();
         PreparedStatement preparedStatement = connection.prepareStatement(SQLQuery.Get.ORGANIZATIONS);
         ResultSet rs = preparedStatement.executeQuery();
-        while(rs.next()) {
+        while (rs.next()) {
             ZonedDateTime creationDate = rs.getTimestamp("creation_date").toLocalDateTime().atZone(ZoneId.of("UTC"));
             Organization organization = new Organization(
                     rs.getInt("id"),
                     rs.getString("name"),
+                    new Coordinates(rs.getLong("x"), rs.getFloat("y")),
+                    rs.getLong("annualTurnover"),
+                    creationDate,
                     rs.getString("fullName"),
-                    new Coordinates(rs.getLong("x")), rs.getFloat("y"),
-                    rs.getLong("creationDate"), creationDate,
                     OrganizationType.valueOf(rs.getString("organizationType")),
-                    rs.
+                    Address.valueOf(rs.getString("officialAddress")));
 
-                    collection.putIfAbsent(rs.getInt("key"), organization);
+            collection.putIfAbsent(rs.getInt("key"), organization);
         }
         return collection;
     }
@@ -71,8 +72,8 @@ public class CollectionModel {
             preparedStatement.setString(++pointer, organization.getName());
             preparedStatement.setTimestamp(++pointer, Timestamp.valueOf(organization.getCreationDate().toLocalDateTime()));
             preparedStatement.setLong(++pointer, organization.getAnnualTurnover());
-            preparedStatement.setO(++pointer, organization.getOfficialAddress());
-            preparedStatement.setInt(++pointer, organization.getType().ordinal()+1);
+            //preparedStatement.setO(++pointer, organization.getOfficialAddress());
+            preparedStatement.setInt(++pointer, organization.getType().ordinal() + 1);
             preparedStatement.setString(++pointer, organization.getFullName());
             preparedStatement.setInt(++pointer, key);
             ResultSet rs = preparedStatement.executeQuery();
@@ -87,12 +88,6 @@ public class CollectionModel {
             preparedStatement.setInt(++pointer, organizationID);
             preparedStatement.executeUpdate();
 
-          /*  preparedStatement = connection.prepareStatement(SQLQuery.Add.DRAGON_HEAD);
-            pointer = 0;
-            if (organization.getHead().getEyesCount() == null)
-                preparedStatement.setNull(++pointer, Types.DOUBLE);
-            else
-                preparedStatement.setDouble(++pointer, organization.getHead().getEyesCount());
             preparedStatement.setInt(++pointer, organizationID);
             preparedStatement.executeUpdate();
 
@@ -103,7 +98,6 @@ public class CollectionModel {
             preparedStatement.executeUpdate();
 
             connection.commit();
-            */
 
             return String.valueOf(organizationID);
         } catch (Throwable e) {
@@ -130,9 +124,8 @@ public class CollectionModel {
             preparedStatement.setString(++pointer, organization.getName());
             preparedStatement.setTimestamp(++pointer, Timestamp.valueOf(organization.getCreationDate().toLocalDateTime()));
             preparedStatement.setLong(++pointer, organization.getAnnualTurnover());
-            preparedStatement.setLong(++pointer, Address.valueOf(organization.getOfficialAddress()));
-            preparedStatement.setInt(++pointer, organization.getType().ordinal()+1);
-            preparedStatement.setInt(++pointer, organization.getType().ordinal()+1);
+            preparedStatement.setInt(++pointer, organization.getType().ordinal() + 1);
+            preparedStatement.setInt(++pointer, organization.getType().ordinal() + 1);
             preparedStatement.setInt(++pointer, id);
             preparedStatement.executeUpdate();
 
@@ -142,7 +135,6 @@ public class CollectionModel {
             preparedStatement.setFloat(++pointer, organization.getCoordinates().getY());
             preparedStatement.setInt(++pointer, id);
             preparedStatement.executeUpdate();
-
 
 
             preparedStatement.setInt(++pointer, id);
@@ -248,7 +240,7 @@ public class CollectionModel {
             deletedKeys.add(rs.getInt(1));
 
         int[] keysArr = new int[deletedKeys.size()];
-        for (int i=0; i < keysArr.length; i++)
+        for (int i = 0; i < keysArr.length; i++)
             keysArr[i] = deletedKeys.get(i);
 
         return keysArr;
