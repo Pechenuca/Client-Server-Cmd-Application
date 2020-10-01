@@ -1,0 +1,7 @@
+#url=jdbc:postgresql://pg:5432/studs
+#user=s282351
+#password=cpv449
+
+#url=jdbc:postgresql://localhost:5432/studs_lab7
+#user=abba
+#password=adda
