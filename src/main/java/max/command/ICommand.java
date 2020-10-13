@@ -13,7 +13,7 @@ public interface ICommand {
 
     /**
      * Функция для выполнения команды по работе с коллекцией
-     * @param context - the context usable by every max.command to communicate with the collection and file manager
+     * @param context - the context usable by every command to communicate with the collection and file manager
      * @param credentials - credentials of the User that sent the request
      */
     Object execute(ExecutionContext context, Credentials credentials) throws IOException;

@@ -9,6 +9,7 @@ import max.exception.AuthorizationException;
 import max.exception.OrgFormatException;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 public class UpdateCommand extends Command {
 
@@ -26,32 +27,32 @@ public class UpdateCommand extends Command {
 
     @Override
     public Object execute(ExecutionContext context, Credentials credentials) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        String res = "";
 
         if (organization == null)
             throw new OrgFormatException();
 
         //AuthorizationException happens when the credentials passed are wrong and the user was already logged
-        String organizationIDaddedToDB = "";
+        String dragonIDaddedToDB = "";
         try {
-            organizationIDaddedToDB = context.collectionController().updateOrganization(Integer.parseInt(args[0]), organization, credentials);
+            dragonIDaddedToDB = context.DBRequestManager().updateOrganization(Integer.parseInt(args[0]), organization, credentials, context.resourcesBundle());
         } catch (AuthorizationException ex) {
             return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
         }
 
         // If it successfully replace it, returns the value of the old mapped object
-        if (organizationIDaddedToDB == null) {
+        if (dragonIDaddedToDB == null) {
             if (context.collectionManager().update(Integer.valueOf(args[0]), organization) != null)
-                sb.append(organization.toString()).append(" Updated!");
+                res = MessageFormat.format(context.resourcesBundle().getString("server.response.command.update"), organization.getId());
         } else
-            sb.append("Problems updating dragon: ").append(organizationIDaddedToDB);
+            res = dragonIDaddedToDB;
 
-        return sb.toString();
+        return res;
     }
 
     @Override
     public int requireInput() {
-        return TYPE_INPUT_CREDENTIAL;
+        return TYPE_INPUT_ORGANIZATION;
     }
     @Override
     public Object getInput() {

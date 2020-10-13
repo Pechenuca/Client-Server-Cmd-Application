@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<AnchorPane fx:id="mainRootPane" xmlns:fx="http://javafx.com/fxml/1"> <!--fx:controller="max.clientUI.canvas.controllers.MainController">-->
+    <children>
+
+        <!--Menu items-->
+        <StackPane fx:id="menubarPane" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                   AnchorPane.topAnchor="0.0"/>
+
+        <AnchorPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+            <children>
+                <JFXTabPane fx:id="mainTabPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <tabs>
+                        <Tab fx:id="mainTab" closable="false" styleClass="tab-main" text="%dashboard.tab.main.title">
+                            <content>
+                                <!--Main content (collection table and command buttons)
+                                <fx:include fx:id="mainViewResource" source="tabs/main_tab.fxml"/>-->
+                            </content>
+                        </Tab>
+
+
+                        <Tab fx:id="mapTab" closable="false" styleClass="tab-main" text="%dashboard.tab.map.title">
+                            <content>
+                                <!--Map tab content
+                                <fx:include fx:id="mapTabResource" source="tabs/map_tab.fxml"/>-->
+                            </content>
+                        </Tab>
+
+
+                        <Tab fx:id="helpTab" closable="false" styleClass="tab-main" text="%dashboard.tab.help.title">
+                            <content>
+
+
+                                <fx:include fx:id="helpTabResource" source="tabs/help_tab.fxml"/>
+                            </content>
+                        </Tab>
+                    </tabs>
+                </JFXTabPane>
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>

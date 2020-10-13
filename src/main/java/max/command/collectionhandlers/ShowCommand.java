@@ -15,7 +15,7 @@ public class ShowCommand extends Command {
     @Override
     public Object execute(ExecutionContext context, Credentials credentials) {
 
-        if (context.collectionController().credentialsNotExist(credentials))
+        if (context.DBRequestManager().credentialsNotExist(credentials))
             return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
 
         return context.collectionManager().getSerializableList();

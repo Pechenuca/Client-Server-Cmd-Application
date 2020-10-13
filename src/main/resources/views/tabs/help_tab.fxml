@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" xmlns:fx="http://javafx.com/fxml/1">
+    <!--fx:controller="max.clientUI.canvas.controllers.tabs.HelpTabController">-->
+    <children>
+        <HBox layoutX="104.0" layoutY="87.0" prefHeight="100.0" prefWidth="200.0"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox prefHeight="575.0" prefWidth="499.0">
+                    <children>
+                        <JFXTextField fx:id="inputCommandKey" labelFloat="true" promptText="%tab.help.input.command.key">
+                            <padding>
+                                <Insets left="5.0" top="30.0"/>
+                            </padding>
+                        </JFXTextField>
+                        <JFXListView fx:id="commandKeysListView" prefHeight="497.0" prefWidth="494.0">
+                            <VBox.margin>
+                                <Insets left="5.0" top="20.0"/>
+                            </VBox.margin>
+                        </JFXListView>
+                    </children>
+                </VBox>
+                <VBox prefHeight="575.0" prefWidth="720.0">
+                    <children>
+                        <Label fx:id="detailsTitle" styleClass="main-title"
+                               text="%tab.help.details.title">
+                            <font>
+                                <Font size="23.0"/>
+                            </font>
+                            <padding>
+                                <Insets left="20.0" top="20.0"/>
+                            </padding>
+                        </Label>
+                        <Label fx:id="detailsText" styleClass="simple-text"
+                               text="...">
+                            <font>
+                                <Font size="18.0"/>
+                            </font>
+                            <padding>
+                                <Insets left="20.0" top="20.0"/>
+                            </padding>
+                        </Label>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>

@@ -6,15 +6,15 @@ import max.database.UserModel;
 import max.exception.OrgFormatException;
 
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class ExecuteScriptCommand extends Command {
 
-    private Factory factory;
-    private List<Command> commands;
+    private final Factory factory;
+    private final List<Command> commands;
 
     public ExecuteScriptCommand(List<Command> commands) {
         this.commands = commands;
@@ -28,46 +28,46 @@ public class ExecuteScriptCommand extends Command {
         if (args.length < 1)
             throw new ArrayIndexOutOfBoundsException();
 
-        if (context.collectionController().credentialsNotExist(credentials))
+        if (context.DBRequestManager().credentialsNotExist(credentials))
             return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
 
-        ArrayList<Object> result = new ArrayList<>();
-
-        String pathToFile = Paths.get(args[0]).toAbsolutePath().toString();
-        String commandsStr = context.fileManager().getStrFromFile(pathToFile);
+        ArrayList<String> result = new ArrayList<>();
+        String commandsStr = context.fileManager().getStrFromFile(args[0]);
 
         String[] commands = commandsStr.trim().split("\n");
         for (int i = 0; i < commands.length; i++) {
             try {
-                result.add("\nCOMMAND #" + i);
-                boolean organizationInputSuccess = false;
+                String commandTitle = MessageFormat.format(context.resourcesBundle().getString("server.response.command.execscript.title"), i);
+                result.add("\n" + commandTitle);
+                boolean dragonInputSuccess = false;
                 String[] ss = commands[i].trim().split(" ");
                 Command command = getCommand(ss[0]);
                 if (command == null) {
-                    result.add("Not found max.command");
-                    break;
+                    result.add(context.resourcesBundle().getString("server.response.command.execscript.error.comm.notfound"));
+                    continue;
                 }
                 command.setArgs(getCommandArgs(ss));
-                if (command.requireInput() == TYPE_INPUT_ORGANIZATION) {
-                    String[] inputsAfterInsert = Arrays.copyOfRange(commands, i + 1, commands.length);
+                if (command.requireInput() == ICommand.TYPE_INPUT_ORGANIZATION) {
+                    ArrayList<String> inputsAfterInsert = new ArrayList<>(Arrays.asList(Arrays.copyOfRange(commands, i + 1, commands.length)));
+                    inputsAfterInsert.add(0, String.valueOf(credentials.id));
                     command.addInput(factory.generateFromScript(inputsAfterInsert));
                     if (command.getInput() == null)
-                        result.add("An input was not in the correct format or The number of inputs is different from the needed");
+                        result.add(context.resourcesBundle().getString("server.response.command.execscript.error.dragoninput"));
                     else
-                        organizationInputSuccess= true;
+                        dragonInputSuccess = true;
                 }
-                result.add(command.execute(context, credentials));
-                if (organizationInputSuccess)
+                result.add((String) command.execute(context, credentials));
+                if (dragonInputSuccess)
                     i+=8;
             } catch (OrgFormatException ex) {
                 result.add(ex.getMessage());
             } catch (NumberFormatException ex) {
-                result.add("Incorrect format of the entered value");
+                result.add(context.resourcesBundle().getString("server.response.error.format.arguments"));
             } catch (ArrayIndexOutOfBoundsException | NullPointerException ex) {
-                result.add("There is a problem in the amount of args passed");
+                result.add(context.resourcesBundle().getString("server.response.error.amount.arguments"));
             }
         }
-        return result;
+        return String.join("\n ", result);
     }
 
     private Command getCommand(String s) {

@@ -2,7 +2,6 @@ package max.network;
 
 import max.database.Credentials;
 import max.database.CurrentUser;
-import max.util.ListEntrySerializable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -87,73 +86,45 @@ public class ClientResponseHandler {
         LOG.info("starting receiver");
         receiverThread = new ResponseReceiver();
         receiverThread.setName("ClientReceiverThread");
+        receiverThread.setDaemon(true);
         receiverThread.start();
     }
 
-    public void checkForResponse() throws ClassNotFoundException {
+    public Object checkForResponse() {
         Object received = receiverThread.receivedObject;
 
-        if (received instanceof String && received.equals("connect")) {
-            channel.setConnected(true);
-            LOG.info("Successfully connected to the server");
-            System.out.println("Successfully connected to the server");
+        final long start = System.currentTimeMillis();
+        while (channel.requestWasSent()) {
+            if (channel.requestWasSent() && System.currentTimeMillis() - start > 1500) {
+                LOG.error("Seems the server went down!");
+                channel.setConnectionToFalse();
+                return "The server is down, please check the connection";
+            }
         }
 
-        synchronized (this) {
-            if (received != null)
-                printResponse(received);
+        if (received != null) {
+            channel.setConnected(true);
+            /* In the case a weird user was put cheating, we logout */
+            if (received instanceof Credentials && ((Credentials)received).id == -1) {
+                LOG.error("Seems you were doing something nasty, go out of my system");
+                System.exit(0);
+            }
+        }
 
+        return received;
+    }
+
+    public void setReceivedObjectToNull() {
+        synchronized (this) {
             receiverThread.receivedObject = null;
         }
     }
 
-    /**
-     * Функция для вывода объектов коллекции
-     * @param obj- коллекция с объектами
-     */
-    public void printResponse(Object obj) throws ClassNotFoundException {
-        if (obj instanceof String) {
-            System.out.println(obj);
-        }
-        else if (obj instanceof List) {
-            printList(obj);
-        }
-        else if (obj instanceof Credentials) {
-            handleCredentialsResponse((Credentials) obj);
-        }
-        else
-            throw new ClassNotFoundException();
+    public void setCurrentUser(Credentials credentials) {
+        currentUser.setCredentials(credentials);
     }
-
-    private void handleCredentialsResponse(Credentials obj) {
-        if (obj.id == -1) {
-            currentUser.setCredentials(obj);
-            System.out.println("Logged out! Weird behaviour checking your credentials");
-            return;
-        }
-        currentUser.setCredentials(obj);
-        System.out.println("Welcome back " + obj.username + "!");
-    }
-
-
-    private void printList(Object obj) {
-        if (((List) obj).size() == 0) {
-            System.out.println("Elements found: 0");
-            return;
-        }
-        if (((List) obj).get(0) instanceof ListEntrySerializable) {
-            ((List<ListEntrySerializable>) obj).stream().forEach(e -> System.out.println("key:" + e.getKey() + " -> " + e.getOrganization().toString()));
-            System.out.println("Elements found: "+ ((List) obj).size());
-        }else {
-            for (Object objFromScript: (List)obj) {
-                if (objFromScript instanceof String)
-                    System.out.println(objFromScript);
-                else if (objFromScript instanceof List) {
-                    ((List<ListEntrySerializable>) objFromScript).stream().forEach(e -> System.out.println("key:" + e.getKey() + " -> " + e.getOrganization().toString()));
-                    System.out.println("Elements found: "+ ((List) objFromScript).size());
-                }
-            }
-        }
+    public CurrentUser getCurrentUser() {
+        return currentUser;
     }
 
 

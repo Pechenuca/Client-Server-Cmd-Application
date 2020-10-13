@@ -6,7 +6,7 @@ public class Main {
     public static void main( String[] args) {
         String mode = System.getProperty("mode").toLowerCase();
         if (mode.equals("client"))
-            ClientMain.main(args);
+            ClientUIMain.main(args);
         else if (mode.equals("server"))
             ServerMain.main(args);
         else

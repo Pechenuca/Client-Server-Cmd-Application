@@ -16,7 +16,7 @@ public class DescriptorCommand extends Command {
     public DescriptorCommand(Map<String, Command> commandsDictionary) {
         this.commandsDictionary = commandsDictionary;
         commandKey = "man";
-        description = "Describe a max.command by its key";
+        description = "Describe a command by its key";
     }
 
     @Override

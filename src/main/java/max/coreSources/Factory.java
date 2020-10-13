@@ -9,9 +9,11 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Factory implements Serializable {
+    private static final long serialVersionUID = -8514622879534406859L;
     private IHandlerInput inputHandler;
 
 
@@ -23,24 +25,26 @@ public class Factory implements Serializable {
      * @param inputs fields from the file to fill the Dragon attrs
      * @return instance of a Dragon with the input entered or null if error
      */
-    public Organization generateFromScript(String[] inputs) {
+    public Organization generateFromScript(ArrayList<String> inputs) {
         try {
-            Integer id = (Integer) getValueOf(Integer.class, inputs[0]);
-            String name = (String) getValueOf(String.class, inputs[1]);
-            Long x = (Long) getValueOf(Long.class, inputs[2]);
-            Float y = (Float) getValueOf(Float.class, inputs[3]);
-            Coordinates coordinates = new Coordinates(x, y);
-            ZonedDateTime creationTime = (ZonedDateTime) getValueOf(ZonedDateTime.class, inputs[4]);
-            Long annualTurnover = (Long) getValueOf(Long.class, inputs[5]);
-            String fullName = (String) getValueOf(String.class, inputs[6]);
-            OrganizationType type = (OrganizationType) getValueOf(OrganizationType.class, inputs[7]);
-            Address officialAddress = (Address) getValueOf(Address.class, inputs[8]);;
+            Integer userID = (Integer) getValueOf(Integer.class, inputs.get(0));
+            String name = (String) getValueOf(String.class, inputs.get(1));
+
+            Long x = (Long) getValueOf(Long.class, inputs.get(2));
+            Float y = (Float) getValueOf(Float.class, inputs.get(3));
+            Coordinates coordinates = new Coordinates(x,y);
+
+            Long annualTurnover = (Long) getValueOf(Long.class, inputs.get(4));
+            Color oColor = (Color) getValueOf(Color.class, inputs.get(5));
+            String fullName = (String) getValueOf(String.class, inputs.get(6));
+            OrganizationType oType = (OrganizationType) getValueOf(OrganizationType.class, inputs.get(7));
+            Address officialAddress = (Address) getValueOf(Address.class, inputs.get(8));
 
 
-            if (id > 0 && name != null && creationTime != null
-                    && type != null && fullName!= null)
-                return new Organization(id, name, x, y, coordinates, creationTime, annualTurnover, fullName, type, officialAddress);
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | ArrayIndexOutOfBoundsException | NullPointerException | JAXBException ex) {
+
+            if (x > -328 && annualTurnover > 0)
+                return new Organization(userID, name, coordinates, annualTurnover, oColor, fullName, oType, officialAddress);
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | IndexOutOfBoundsException | NullPointerException ex) {
             return null;
         }
         return null;
@@ -62,6 +66,7 @@ public class Factory implements Serializable {
         Long x = (Long) this.validateOrganizationProp("coordinate{X}", " [should be more than -328]", false, Long.class, -328);
         Float y = (Float) this.validateOrganizationProp("coordinate{Y}", "", false, Float.class);
         Coordinates coordinates = new Coordinates(x,y);
+        Color oColor = (Color) validateOrganizationProp("color", Arrays.asList(Color.values()).toString(), false, Color.class);
         String fullName = (String) validateOrganizationProp("name", "", false, String.class);
         Long annualTurnover= (Long) validateOrganizationProp("annualTurnover"," [should be more than 0 and not null]", false, Long.class, 0);
         Address officialAddress = (Address) validateOrganizationProp("address", "[should be not null]", false, Address.class);
@@ -70,7 +75,7 @@ public class Factory implements Serializable {
 
 
 
-        return new Organization(name, coordinates, fullName, annualTurnover, officialAddress, oType);
+        return new Organization(name, coordinates, oColor, fullName, annualTurnover, officialAddress, oType);
     }
 
     /**
@@ -90,7 +95,7 @@ public class Factory implements Serializable {
         boolean errorHappened;
         do {
             errorHappened = false;
-            input = inputHandler.readWithMessage("Dragon's " +fType+desc+": ");
+            input = inputHandler.readWithMessage("Organization's " +fType+desc+": ");
 
             if (nullable && input.isEmpty())
                 return null;

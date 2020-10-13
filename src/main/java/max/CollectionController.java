@@ -112,7 +112,7 @@ public class CollectionController {
 
             return collectionModel.delete(key, credentials);
         } catch (Throwable ex) {
-            LOG.error("deleting dragon in db", ex);
+            LOG.error("deleting organization in db", ex);
             return ex.getMessage();
         }
     }

@@ -21,16 +21,15 @@ public class ClearCommand extends Command {
         //AuthorizationException happens when the credentials passed are wrong and the user was already logged
         String resDeletingAll = "";
         try {
-            resDeletingAll = context.collectionController().deleteAllOrganizations(credentials);
+            resDeletingAll = context.DBRequestManager().deleteAllOrganization(credentials, context.resourcesBundle());
         } catch (AuthorizationException ex) {
             return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
         }
 
-
         if (resDeletingAll == null) {
             context.collectionManager().clear();
-            return "All elems deleted successfully!";
+            return context.resourcesBundle().getString("server.response.command.clear");
         } else
-            return "Problem clearing dragons: " + resDeletingAll;
+            return resDeletingAll;
     }
 }

@@ -68,7 +68,7 @@ public class FileManager {
 
     /**
      * Функция сохранения коллекции в формате xml в файл
-     * @param collection - Хэшмэп, содержащий коллекцию экземпляров класса Dragon
+     * @param collection - Хэшмэп, содержащий коллекцию экземпляров класса Organization
      * @throws IOException
      * @throws JAXBException
      */
@@ -90,7 +90,7 @@ public class FileManager {
 
     /**
      * Функция получения коллекции из файла
-     * @return - возвращает collection - Хэшмэп, содержащий коллекцию экземпляров класса Dragon
+     * @return - возвращает collection - Хэшмэп, содержащий коллекцию экземпляров класса Organization
      */
     public HashMap<Integer, Organization> getCollectionFromFile() throws IOException, JAXBException {
         HashMap<Integer, Organization> collection = new HashMap<Integer, Organization>();
@@ -105,7 +105,7 @@ public class FileManager {
 
     /**
      * Функция получения коллекции из файла
-     * @return - возвращает collection - Хэшмэп, содержащий коллекцию экземпляров класса Dragon
+     * @return - возвращает collection - Хэшмэп, содержащий коллекцию экземпляров класса Organization
      */
     public HashMap<Integer, Organization> getCollectionFromFile(String filePath) throws IOException, InvalidPathException, JAXBException {
         HashMap<Integer, Organization> collection = new HashMap<Integer, Organization>();

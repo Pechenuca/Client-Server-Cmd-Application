@@ -23,7 +23,7 @@ public class LoginCommand extends Command {
 
     @Override
     public Object execute(ExecutionContext context, Credentials credentials) throws IOException {
-        return context.collectionController().login(this.credentials);
+        return context.DBRequestManager().login(this.credentials, context.resourcesBundle());
     }
 
     @Override

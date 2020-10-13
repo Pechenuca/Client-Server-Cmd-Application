@@ -2,9 +2,11 @@ package max.command.collectionhandlers;
 
 import max.command.Command;
 import max.command.ExecutionContext;
+import max.coreSources.Organization;
 import max.database.Credentials;
 import max.database.UserModel;
-import max.util.ListEntrySerializable;
+import max.util.OrganizationEntrySerializable;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -19,11 +21,11 @@ public class PrintDescendingCommand extends Command {
     @Override
     public Object execute(ExecutionContext context, Credentials credentials) throws IOException {
 
-        if (context.collectionController().credentialsNotExist(credentials))
+        if (context.DBRequestManager().credentialsNotExist(credentials))
             return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
 
-        StringBuilder sb = new StringBuilder();
-        List<ListEntrySerializable> sortedOrganizations = null;
+        String res = "";
+        List<OrganizationEntrySerializable> sortedOrganizations = null;
 
         switch (args[0]) {
             case "":
@@ -44,11 +46,11 @@ public class PrintDescendingCommand extends Command {
                 sortedOrganizations = context.collectionManager().sortByCreationDate();
                 break;
             default:
-                sb.append("This option is not available. Correct= -{k/i/n/d}");
+                res = context.resourcesBundle().getString("server.response.command.printdescending.error.options");
         }
         if (sortedOrganizations != null)
             return sortedOrganizations;
-        return sb.toString();
+        return res;
     }
 
     @Override

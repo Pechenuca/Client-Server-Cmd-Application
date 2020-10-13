@@ -1,0 +1,251 @@
+* {
+    -fx-primary: #2A2E37;
+    -fx-secondary: #048abf;
+    -fx-third: #077fb0;
+    -fx-primarytext: #B2B2B2;
+    -fx-blue: #1976D2;
+    -fx-red: #FF0000;
+    -fx-color-1: #1976D2;
+}
+
+.root {
+    -fx-background-color: -fx-primary;
+}
+
+
+/* Login/register page */
+.main-title {
+    -fx-text-fill: -fx-secondary;
+}
+
+.splash-title {
+    -fx-text-fill: -fx-secondary;
+    -fx-font-size: 25;
+    -fx-font-weight: bold;
+    -fx-background-color: rgba(0,0,0,0.5);
+}
+
+.simple-text {
+    -fx-text-fill: -fx-primarytext;
+}
+
+.detail-dragon {
+    -fx-text-fill: -fx-primarytext;
+    -fx-font-size: 18;
+    -fx-padding: 10 15 3 0;
+}
+
+.button {
+    -fx-text-fill: -fx-primarytext;
+    -fx-background-color: -fx-primary;
+    -fx-border-color: -fx-secondary;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-font-size: 12pt;
+}
+
+.button:hover, .button:focused{
+    -fx-border-color: -fx-secondary;
+    -fx-background-color: -fx-secondary;
+    -fx-text-fill: -fx-primary;
+}
+
+.text-field {
+    -fx-text-fill: -fx-primarytext;
+    -fx-font-size : 12pt;
+    -jfx-focus-color: -fx-secondary;
+    -fx-text-fill: derive(-fx-secondary, 20%);
+}
+
+.wrong-credentials {
+    -jfx-unfocus-color: #ef5350;
+}
+
+/*Menu bar Styling*/
+.menu-bar {
+    -fx-font-size: 14;
+    -fx-base : -fx-primary;
+    -fx-background-color: -fx-primary;
+}
+
+.context-menu {
+    -fx-background-color:  derive(-fx-primary, 20%);
+    -fx-font-size: 14;
+    -fx-min-width: 150px;
+}
+
+#currentUserLabel {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-text-fill: green;
+}
+
+
+/* tabs styles */
+.tab{
+    -fx-background-color: -fx-primary;
+}
+
+.tab-header-background {
+    -fx-background-color: -fx-primary;
+}
+
+.tab-label {
+    -fx-text-fill: -fx-secondary;
+    -fx-font-size: 10pt;
+}
+
+.jfx-tab-pane .tab-selected-line {
+    -fx-border-color: -fx-third;
+    -fx-background-color: -fx-third;
+}
+
+.tab-main {
+    -fx-pref-width : 200;
+    -fx-pref-height : 40;
+}
+
+
+/* table styles */
+.table-view {
+    -fx-background-color: derive(-fx-primary, 10%);
+    -fx-font-size: 16px;
+    -fx-border-color: derive(-fx-secondary, -60%);
+}
+.table-view:focused {
+    -fx-background-color: derive(-fx-primary, 20%);
+}
+.table-row-cell {
+    -fx-cell-size: 40px;
+}
+.table-view .column-header-background {
+    -fx-background-color: -fx-primary;
+}
+.table-view .column-header-background .label {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+.table-view .table-cell {
+    -fx-text-fill: white;
+}
+.table-row-cell:focused, .table-cell:focused {
+    -fx-text-fill: -fx-primary;
+}
+.table-row-cell {
+    -fx-background-color: -fx-primary;
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+}
+.table-column {
+    -fx-alignment: CENTER;
+}
+.table-row-cell:even{
+    -fx-background-color: derive(-fx-primary, 10%);
+}
+.table-row-cell:selected {
+    -fx-background-color: -fx-secondary;
+    -fx-text-fill: -fx-primary;
+    -fx-background-insets: 0;
+}
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: -fx-primary;
+}
+.placeholder .label {
+    -fx-text-fill: white;
+}
+.table-view > .virtual-flow > .scroll-bar:vertical,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track-background,
+.table-view > .virtual-flow > .scroll-bar:horizontal,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track-background {
+    -fx-background-color: transparent;
+}
+.table-view > .virtual-flow > .scroll-bar > .increment-button,
+.table-view > .virtual-flow > .scroll-bar > .decrement-button {
+    -fx-text-fill: white;
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: derive(-fx-primary, 60%);
+    -fx-border-color: transparent;
+    -fx-background-radius: 5em;
+}
+.table-view .filler {
+    -fx-fill: -fx-primary;
+    -fx-background-color: -fx-primary;
+}
+.table-context
+{
+    -fx-base: -fx-primary;
+}
+
+.colored-context-menu .menu-item:focused {
+    -fx-background-color: -fx-secondary;
+    -fx-text-fill: black;
+}
+
+.colored-context-menu .menu-item:focused .label {
+    -fx-text-fill: black;
+}
+
+
+/* Alert Dialog */
+
+.custom-alert {
+    -fx-background-color: -fx-primary;
+    -fx-text-fill: white;
+}
+.custom-alert > *.button-bar > *.container {
+    -fx-background-color: -fx-primary;
+}
+.custom-alert > *.label.content {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+.custom-alert:header *.header-panel {
+    -fx-background-color: -fx-blue;
+}
+.custom-alert:header .header-panel .label {
+    -fx-font-style: normal;
+    -fx-text-fill: white;
+}
+.custom-alert:header *.header-panel *.label {
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+    -fx-fill: -fx-primary;
+}
+
+
+/* map section */
+
+.map-wrapper {
+    -fx-background-color: -fx-primarytext;
+}
+
+
+/* bordered box of commands */
+
+.bordered-titled-title {
+    -fx-text-fill: -fx-secondary;
+    -fx-background-color: -fx-primary;
+    -fx-font-size: 18;
+    -fx-translate-y: -10;
+    -fx-translate-x: 5;
+}
+
+.bordered-titled-border {
+    -fx-content-display: top;
+    -fx-border-insets: 20 15 15 15;
+    -fx-border-color: -fx-third;
+    -fx-border-width: 2;
+}
+
+.bordered-titled-content {
+    -fx-padding: 26 10 10 10;
+}
+

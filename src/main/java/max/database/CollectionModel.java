@@ -1,10 +1,7 @@
 package max.database;
 
 
-import max.coreSources.Address;
-import max.coreSources.Coordinates;
-import max.coreSources.Organization;
-import max.coreSources.OrganizationType;
+import max.coreSources.*;
 
 import java.sql.*;
 import java.time.ZoneId;
@@ -35,6 +32,7 @@ public class CollectionModel {
                     new Coordinates(rs.getLong("x"), rs.getFloat("y")),
                     rs.getLong("annualTurnover"),
                     creationDate,
+                    Color.valueOf(rs.getString("color")),
                     rs.getString("fullName"),
                     OrganizationType.valueOf(rs.getString("type")),
                     Address.valueOf(rs.getString("officialAddress")));
@@ -152,7 +150,7 @@ public class CollectionModel {
         }
     }
 
-    public int getDragonByKey(int key) throws SQLException {
+    public int getOrganizationByKey(int key) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(SQLQuery.Get.ORGANIZATION_BY_KEY);
         int pointer = 0;
         preparedStatement.setInt(++pointer, key);
@@ -165,7 +163,7 @@ public class CollectionModel {
 
     public String deleteAll(Credentials credentials) throws SQLException {
         if (!credentials.username.equals(UserModel.ROOT_USERNAME))
-            return "You have no permissions to delete all dragons";
+            return "You have no permissions to delete all organizations";
 
         mainLock.lock();
         final boolean oldAutoCommit = connection.getAutoCommit();
@@ -186,9 +184,9 @@ public class CollectionModel {
 
 
     public String delete(int key, Credentials credentials) throws SQLException {
-        int organizationID = getDragonByKey(key);
+        int organizationID = getOrganizationByKey(key);
         if (!hasPermissions(credentials, organizationID))
-            return "You have no permissions to delete this dragon";
+            return "You have no permissions to delete this organization";
 
         mainLock.lock();
         final boolean oldAutoCommit = connection.getAutoCommit();

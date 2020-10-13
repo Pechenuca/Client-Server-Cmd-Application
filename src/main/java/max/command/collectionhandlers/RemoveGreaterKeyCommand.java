@@ -9,6 +9,7 @@ import max.exception.AuthorizationException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 
 public class RemoveGreaterKeyCommand extends Command {
 
@@ -25,9 +26,9 @@ public class RemoveGreaterKeyCommand extends Command {
         String resultDeletedByKey = "";
         int[] deletedIDs = null;
         try {
-            deletedIDs = context.collectionController().deleteOrganizationsGreaterThanKey(Integer.parseInt(args[0]), credentials);
+            deletedIDs = context.DBRequestManager().deleteOrganizationsGreaterThanKey(Integer.parseInt(args[0]), credentials);
         } catch (SQLException | NoSuchAlgorithmException ex) {
-            resultDeletedByKey = ex.getMessage();
+            resultDeletedByKey = context.DBRequestManager().getSQLErrorString("remove dragons greater than key", context.resourcesBundle(), ex);
         } catch (AuthorizationException ex) {
             return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
         }
@@ -35,14 +36,14 @@ public class RemoveGreaterKeyCommand extends Command {
         if (deletedIDs != null)
             context.collectionManager().removeOnKey(deletedIDs);
         else
-            sb.append("Problems deleting organizations: ").append(resultDeletedByKey);
+            sb.append(resultDeletedByKey);
 
         int finalSize = context.collectionManager().getCollection().size();
-
         if (initialSize == finalSize)
-            sb.append("No Organizations removed");
+            sb.append(context.resourcesBundle().getString("server.response.command.remove.noremoved"));
         else
-            sb.append("A total of ").append(initialSize - finalSize).append(" organizations were removed");
+            sb.append(MessageFormat.format(context.resourcesBundle().getString("server.response.command.remove.total.removed"), (initialSize - finalSize)));
+
         return sb.toString();
     }
 }

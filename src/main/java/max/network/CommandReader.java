@@ -5,8 +5,9 @@ import max.command.*;
 import max.coreSources.CredentialFactory;
 
 import max.coreSources.Factory;
-import max.coreSources.Organization;
 
+
+import max.coreSources.Organization;
 import max.database.Credentials;
 import max.database.UserModel;
 import max.exception.AuthorizationException;
@@ -17,6 +18,7 @@ import org.apache.log4j.Logger;
 import max.managers.CommandManager;
 
 import java.io.IOException;
+import java.util.Locale;
 
 public class CommandReader {
 
@@ -53,7 +55,7 @@ public class CommandReader {
                 throw new AuthorizationException("The default user can not execute special commands, please login");
 
             checkForInputs(command);
-            channel.sendCommand(new CommandPacket(command, credentials));
+            channel.sendCommand(new CommandPacket(command, credentials, new Locale("en")));
         }
     }
 

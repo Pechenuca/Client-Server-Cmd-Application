@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+
+<!--Menu items-->
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootMenuBarPane">
+    <children>
+        <MenuBar>
+            <menus>
+                <Menu fx:id="menuUser" mnemonicParsing="false" text="%menubar.title.user">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleMenuLogOut" text="%menubar.user.logout"/>
+                    </items>
+                </Menu>
+                <Menu fx:id="menuAdd" mnemonicParsing="false" text="%menubar.organization.title">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleMenuAddOrganization"
+                                  text="%menubar.organization.add"/>
+                    </items>
+                </Menu>
+                <Menu fx:id="menuLanguage" mnemonicParsing="false" text="%menubar.languages.title">
+                    <items>
+                        <RadioMenuItem fx:id="en" mnemonicParsing="false" text="%menubar.languages.english">
+                            <toggleGroup>
+                                <ToggleGroup fx:id="languageOptions"/>
+                            </toggleGroup>
+                        </RadioMenuItem>
+                        <RadioMenuItem fx:id="ru" mnemonicParsing="false" text="%menubar.languages.russian"
+                                       toggleGroup="$languageOptions"/>
+                        <RadioMenuItem fx:id="sr" mnemonicParsing="false" text="%menubar.languages.serbian"
+                                       toggleGroup="$languageOptions"/>
+                        <RadioMenuItem fx:id="hr" mnemonicParsing="false" text="%menubar.languages.croatian"
+                                       toggleGroup="$languageOptions"/>
+                        <RadioMenuItem fx:id="es" mnemonicParsing="false" text="%menubar.languages.spanish"
+                                       toggleGroup="$languageOptions"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="%menubar.help.title">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleAboutMenu" text="%menubar.help.element.about"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <!-- label describing actual user -->
+        <Label fx:id="currentUserLabel" text="%menubar.current.user.title" StackPane.alignment="CENTER_RIGHT">
+            <StackPane.margin>
+                <Insets right="10.0"/>
+            </StackPane.margin>
+        </Label>
+    </children>
+</StackPane>

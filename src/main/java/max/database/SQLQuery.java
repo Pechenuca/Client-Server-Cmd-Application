@@ -4,16 +4,25 @@ public class SQLQuery {
     public static class Get {
         //ORGANIZATIONS
         public static final String ORGANIZATIONS = "SELECT organizations.id, organizations.name, " +
-                "coordinates.x, coordinates.y, organizations.annualTurnover, " +
+                "coordinates.x, coordinates.y, dragon_colors.color, organizations.annualTurnover, " +
                 "organizations.creation_date, organizations.key, organizations.fullName, " +
                 "organization_types.type, organization_address.officialAddress \n" +
 
                 "FROM organizations\n" +
                 "    INNER JOIN coordinates ON organizations.id = coordinates.organization_id\n" +
+                "    INNER JOIN dragon_colors ON dragons.color = dragon_colors.id\n" +
                 "    INNER JOIN organization_address ON organizations.officialAddress = organization_address.id\n" +
                 "    INNER JOIN organization_types ON organizations.type = organization_types.id\n";
 
         public static final String ORGANIZATION_BY_KEY = "SELECT id FROM organizations where key = ?";
+
+        public static final String ORGANIZATIONS_WITH_USER = "SELECT organizations.id, organizations.key, organizations.name, organizations.annualTurnover, organizations.creation_date, organizations.key, coordinates.x, coordinates.y, organization_types.type, official_Address.character, user_id\n" +
+                "FROM organizations\n" +
+                "    INNER JOIN coordinates ON organizations.id = coordinates.organization_id\n" +
+                "    INNER JOIN organization_colors ON dragons.color = organization_colors.id\n" +
+                "    INNER JOIN organization_types ON organizations.type = organization_types.id\n" +
+                "    INNER JOIN organization_characters ON organizations.character = organization_characters.id\n" +
+                "    INNER JOIN users_organizations ud on organizations.id = uo.organizations_id";
 
         //USERS
         public static final String USERS = "SELECT * FROM users";
@@ -26,21 +35,22 @@ public class SQLQuery {
 
     public static class Add {
         public static final String ORGANIZATION = "" +
-                "INSERT INTO organizations(name, creation_date, annualTurnover, fullName, type, officialAddress, key) " +
-                "VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id";
+                "INSERT INTO organizations(name, creation_date, annualTurnover, type, officialAddress, key) " +
+                "VALUES(?, ?, ?, ?, ?, ?) RETURNING id";
         public static final String COORDINATE = "" +
                 "INSERT INTO coordinates(x, y, organization_id) " +
                 "VALUES(?, ?, ?)";
-//!!!!!!
+
         public static final String USER = "" +
                 "INSERT INTO users(username, password) VALUES(?, ?)";
+
         public static final String ORGANIZATION_USER_RELATIONSHIP = "" +
                 "INSERT INTO users_organizations VALUES (?, ?)";
     }
 
     public static class Update {
         public static final String ORGANIZATION = "" +
-                "UPDATE organizations SET name = ?, creation_date = ?, annualTurnover = ?, fullName = ?, officialAddress = ?, type = ?\n" +
+                "UPDATE organizations SET name = ?, creation_date = ?, annualTurnover = ?, fullName = ?, type = ?, officialAddress = ? \n" +
                 "WHERE organizations.id = ?";
         public static final String COORDINATE = "" +
                 "UPDATE coordinates SET x = ?, y = ? WHERE organization_id = ?";

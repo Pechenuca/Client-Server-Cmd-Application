@@ -7,6 +7,7 @@ import max.database.UserModel;
 import max.exception.AuthorizationException;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 public class RemoveKeyCommand extends Command {
 
@@ -17,12 +18,12 @@ public class RemoveKeyCommand extends Command {
 
     @Override
     public Object execute(ExecutionContext context, Credentials credentials) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        String res = "";
 
         //AuthorizationException happens when the credentials passed are wrong and the user was already logged
         String resultDeletedByKey = "";
         try {
-            resultDeletedByKey = context.collectionController().deleteOrganization(Integer.parseInt(args[0]), credentials);
+            resultDeletedByKey = context.DBRequestManager().deleteOrganization(Integer.parseInt(args[0]), credentials, context.resourcesBundle());
         } catch (AuthorizationException ex) {
             return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
         }
@@ -30,9 +31,10 @@ public class RemoveKeyCommand extends Command {
         // If it successfully replace it, returns the value of the old mapped object
         if (resultDeletedByKey == null) {
             if (context.collectionManager().removeKey(Integer.valueOf(args[0])) != null)
-                sb.append("k:").append(args[0]).append(" Successfully removed!");
+                res = MessageFormat.format(context.resourcesBundle().getString("server.response.command.removebykey"), args[0]);
         } else
-            sb.append("Problems deleting dragon: ").append(resultDeletedByKey);
-        return sb.toString();
+            res = resultDeletedByKey;
+
+        return res;
     }
 }

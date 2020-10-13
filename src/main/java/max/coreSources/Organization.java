@@ -1,7 +1,6 @@
 package max.coreSources;
 
 
-
 import max.util.ZonedDateTimeSerializer;
 
 import javax.xml.bind.JAXBException;
@@ -10,7 +9,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-
 
 
 @XmlRootElement(name = "organization")
@@ -25,6 +23,8 @@ public class Organization implements Comparable<Organization>, Serializable {
     private String fullName; //Поле может быть null
     private OrganizationType type; //Поле не может быть null
     private Address officialAddress; //Поле не может быть null
+    private Color color;
+    private Integer userID = 0;
 
     public Organization() {
     }
@@ -40,23 +40,24 @@ public class Organization implements Comparable<Organization>, Serializable {
         this.officialAddress = officialAddress;
     }
 
-    public Organization(Integer id, String name, Coordinates coordinates, Long annualTurnover, String fullName, OrganizationType type, Address officialAddress) {
-        this.setCreationDate();
-    }
 
     public Organization(String name, Coordinates coordinates,
-                        String fullName, Long annualTurnover,
-                        Address address, OrganizationType oType) {
+                        String fullName, Long annualTurnover, OrganizationType type,
+                        Address address) {
         this.name = name;
+        this.coordinates = coordinates;
         this.creationDate = ZonedDateTime.now();
         this.annualTurnover = annualTurnover;
         this.fullName = fullName;
+        this.type = type;
         this.officialAddress = address;
     }
 
 
 
+
     public Organization(Integer id,
+                        Integer userID,
                         String name,
                         Coordinates coordinates,
                         Long annualTurnover,
@@ -64,10 +65,39 @@ public class Organization implements Comparable<Organization>, Serializable {
                         String fullName,
                         OrganizationType type,
                         Address officialAddress) {
-        this(id, name, coordinates, annualTurnover, fullName, type, officialAddress);
+        this(id, userID, name, coordinates, annualTurnover, fullName, type, officialAddress);
         this.creationDate = creationDate;
     }
 
+    
+
+    public Organization(int id, String name, Coordinates coordinates, long annualTurnover,
+                        ZonedDateTime creationDate, Color color, String fullName, OrganizationType type,
+                        Address officialAddress) {
+        this(id, name, coordinates, annualTurnover, color, type, officialAddress);
+        this.id = id;
+        
+    }
+
+    public Organization(int id, String name, Coordinates coordinates, long annualTurnover, Color color, OrganizationType type, Address officialAddress) {
+    }
+
+    public Organization(Integer id, Integer userID, String name, Coordinates coordinates,
+                        Long annualTurnover, String fullName, OrganizationType type,
+                        Address officialAddress) {
+        this.name = name;
+        this.coordinates = coordinates;
+        this.setCreationDate();
+        this.annualTurnover =annualTurnover;
+        this.type = type;
+        this.officialAddress = officialAddress;
+    }
+
+    public Organization(String name, Coordinates coordinates, Color oColor, String fullName, Long annualTurnover, Address officialAddress, OrganizationType oType) {
+    }
+
+    public Organization(Integer userID, String name, Coordinates coordinates, Long annualTurnover, Color oColor, String fullName, OrganizationType oType, Address officialAddress) {
+    }
 
     public Integer getId() {
         return id;
@@ -94,6 +124,9 @@ public class Organization implements Comparable<Organization>, Serializable {
         this.creationDate = ZonedDateTime.now();
     }
 
+    public Integer getUserID() {
+        return userID;
+    }
 
     public Long getAnnualTurnover() {
         return annualTurnover;
@@ -111,7 +144,6 @@ public class Organization implements Comparable<Organization>, Serializable {
     public OrganizationType getType() {
         return type;
     }
-
 
     @Override
     public int compareTo(Organization organization) {
@@ -136,7 +168,9 @@ public class Organization implements Comparable<Organization>, Serializable {
                 '}';
     }
 
-
+    public Color getColor() {
+        return color;
+    }
     public void setId(int id) {
         this.id = id;
     }
@@ -160,6 +194,7 @@ public class Organization implements Comparable<Organization>, Serializable {
                 this.getType().equals(objOrg.getType());
 
     }
+
 }
 
 
