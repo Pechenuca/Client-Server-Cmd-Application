@@ -7,6 +7,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class AlertMaker {
     public static void showSimpleAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -55,7 +57,7 @@ public class AlertMaker {
         //stage.getIcons().add(new Image("/resources/media/dialog_icon.png"));
 
         DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(AlertMaker.class.getClassLoader().getResource("styles.css").toExternalForm());
+        dialogPane.getStylesheets().add(Objects.requireNonNull(AlertMaker.class.getClassLoader().getResource("styles.css")).toExternalForm());
         dialogPane.getStyleClass().add("custom-alert");
     }
 }

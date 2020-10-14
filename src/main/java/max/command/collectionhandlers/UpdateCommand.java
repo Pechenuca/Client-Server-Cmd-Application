@@ -33,19 +33,19 @@ public class UpdateCommand extends Command {
             throw new OrgFormatException();
 
         //AuthorizationException happens when the credentials passed are wrong and the user was already logged
-        String dragonIDaddedToDB = "";
+        String organizationIDaddedToDB = "";
         try {
-            dragonIDaddedToDB = context.DBRequestManager().updateOrganization(Integer.parseInt(args[0]), organization, credentials, context.resourcesBundle());
+            organizationIDaddedToDB = context.DBRequestManager().updateOrganization(Integer.parseInt(args[0]), organization, credentials, context.resourcesBundle());
         } catch (AuthorizationException ex) {
             return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
         }
 
         // If it successfully replace it, returns the value of the old mapped object
-        if (dragonIDaddedToDB == null) {
+        if (organizationIDaddedToDB == null) {
             if (context.collectionManager().update(Integer.valueOf(args[0]), organization) != null)
                 res = MessageFormat.format(context.resourcesBundle().getString("server.response.command.update"), organization.getId());
         } else
-            res = dragonIDaddedToDB;
+            res = organizationIDaddedToDB;
 
         return res;
     }

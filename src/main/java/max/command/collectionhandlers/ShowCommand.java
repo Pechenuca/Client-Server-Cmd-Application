@@ -21,3 +21,4 @@ public class ShowCommand extends Command {
         return context.collectionManager().getSerializableList();
     }
 }
+

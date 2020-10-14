@@ -28,7 +28,7 @@ public class RemoveGreaterKeyCommand extends Command {
         try {
             deletedIDs = context.DBRequestManager().deleteOrganizationsGreaterThanKey(Integer.parseInt(args[0]), credentials);
         } catch (SQLException | NoSuchAlgorithmException ex) {
-            resultDeletedByKey = context.DBRequestManager().getSQLErrorString("remove dragons greater than key", context.resourcesBundle(), ex);
+            resultDeletedByKey = context.DBRequestManager().getSQLErrorString("remove organizations greater than key", context.resourcesBundle(), ex);
         } catch (AuthorizationException ex) {
             return new Credentials(-1, UserModel.DEFAULT_USERNAME, "");
         }

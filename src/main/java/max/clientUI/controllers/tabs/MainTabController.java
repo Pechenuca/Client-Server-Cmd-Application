@@ -93,7 +93,7 @@ public class MainTabController implements Initializable {
         annualTurnoverCol.setCellValueFactory(new PropertyValueFactory<>("annualTurnover"));
         fullNameCol.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
-        officialAddressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+        officialAddressCol.setCellValueFactory(new PropertyValueFactory<>("officialAddress"));
     }
 
     private TableCell<OrganizationEntrySerializable, ZonedDateTime> handleFormatCellDateCreation() {

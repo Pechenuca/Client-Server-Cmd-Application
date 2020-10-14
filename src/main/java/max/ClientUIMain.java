@@ -23,12 +23,29 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.time.LocalDateTime;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class ClientUIMain extends Application {
 
     private static final Logger LOG = LogManager.getLogger(ClientUIMain.class);
     private static ClientContext clientContext;
 
     @Override
+
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/login_register.fxml"));
         loader.setController(new LoginRegisterController(clientContext));
@@ -45,7 +62,7 @@ public class ClientUIMain extends Application {
     public static void main(String[] args) {
         initConfig(args);
         launch(args);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> LOG.log(Level.INFO, "Closing Organizations World on {}", LocalDateTime.now())));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> LOG.log(Level.INFO, "Closing Dragons World on {}", LocalDateTime.now())));
     }
 
 

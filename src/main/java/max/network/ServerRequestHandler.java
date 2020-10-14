@@ -45,7 +45,6 @@ public class ServerRequestHandler {
 
             } catch (SocketTimeoutException ignored) {
             } catch (IOException | ClassNotFoundException e) {
-                System.err.println("Weird errors, check log");
                 LOG.error("Weird errors processing the received data", e);
                 executeObj("Weird errors, check log. " + e.getMessage(), addressFromClient);
             }
@@ -85,6 +84,7 @@ public class ServerRequestHandler {
         requestReceiver.start();
     }
 
+
     /**
      * Функция для работы с командами клиента
      * @param obj - полученная от клиента команда
@@ -98,19 +98,20 @@ public class ServerRequestHandler {
             else {
                 Command command = ((CommandPacket) obj).getCommand();
                 Credentials credentials = ((CommandPacket) obj).getCredentials();
+                executionContext.setResourcesBundle(((CommandPacket) obj).getLocale());
                 try {
                     responseExecution = command.execute(executionContext, credentials);
                 }catch (OrgFormatException ex) {
                     responseExecution = ex.getMessage();
                     LOG.error(ex.getMessage(), ex);
                 } catch (NumberFormatException ex) {
-                    responseExecution = "Incorrect format of the entered value";
+                    responseExecution = executionContext.resourcesBundle().getString("server.response.error.format.arguments");
                     LOG.error("Incorrect format of the entered value", ex);
                 } catch (ArrayIndexOutOfBoundsException ex) {
-                    responseExecution = "There is a problem in the amount of args passed";
+                    responseExecution = executionContext.resourcesBundle().getString("server.response.error.amount.arguments");
                     LOG.error("There is a problem in the amount of args passed", ex);
                 } catch (SecurityException ex) {
-                    responseExecution = "Security problems trying to access to the file (Can not be read or edited)";
+                    responseExecution = executionContext.resourcesBundle().getString("server.response.error.access.security");
                     LOG.error("Security problems trying to access to the file (Can not be read or edited)", ex);
                 } catch (IOException ex) {
                     responseExecution = ex.getMessage();
@@ -125,22 +126,20 @@ public class ServerRequestHandler {
             System.out.println("Future Object gotten from executor: \n" + resulted.get().toString());
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Error getting result from executor", e);
-            System.out.println("Error getting result from executor: " + e.getMessage());
         }
     }
+
 
     /**
      * Функция для отключения сервера
      */
     public void disconnect() {
         LOG.info("Disconnecting the server...");
-        System.out.println("Disconnecting the server...");
         try {
             executor.shutdown();
             executor.awaitTermination(500, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             LOG.error("Interrupted executor during shutdown",e);
-            System.out.println("Interrupted during finishing the queued tasks");
         }
         socket.disconnect();
         requestReceiver.interrupt();

@@ -7,7 +7,6 @@ import max.database.UserModel;
 import max.exception.AuthorizationException;
 
 import java.io.IOException;
-
 public class ClearCommand extends Command {
 
     public ClearCommand() {

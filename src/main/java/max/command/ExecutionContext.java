@@ -1,6 +1,5 @@
 package max.command;
 
-import max.CollectionController;
 import max.database.DBRequestManager;
 import max.managers.CollectionManager;
 import max.managers.FileManager;

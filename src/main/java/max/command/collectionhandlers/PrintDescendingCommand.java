@@ -5,8 +5,8 @@ import max.command.ExecutionContext;
 import max.coreSources.Organization;
 import max.database.Credentials;
 import max.database.UserModel;
+import max.exception.AuthorizationException;
 import max.util.OrganizationEntrySerializable;
-
 
 import java.io.IOException;
 import java.util.List;

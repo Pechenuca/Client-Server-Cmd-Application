@@ -14,7 +14,7 @@
 <?import com.jfoenix.controls.JFXButton?>
 <StackPane fx:id="rootPane" stylesheets="@../../styles.css" xmlns="http://javafx.com/javafx/8.0.171"
            xmlns:fx="http://javafx.com/fxml/1">
-    <!--fx:controller="ru.students.lab.clientUI.max.clientUI.canvas.controllers.forms.AddDragonController">-->
+    <!--fx:controller="max.clientUI.canvas.controllers.forms.AddOrganizationController">-->
     <children>
         <AnchorPane id="AnchorPane" fx:id="mainContainer" prefHeight="338.0" prefWidth="464.0" styleClass="custom-pane">
             <children>
@@ -61,16 +61,11 @@
                                 <Insets left="10.0" right="10.0" top="25.0"/>
                             </VBox.margin>
                         </JFXComboBox>
-                        <JFXComboBox fx:id="characterBox" labelFloat="true" promptText="%form.add.input.character">
+                        <JFXComboBox fx:id="officialAddressBox" labelFloat="true" promptText="%form.add.input.officialAddress">
                             <VBox.margin>
                                 <Insets left="10.0" right="10.0" top="25.0"/>
                             </VBox.margin>
                         </JFXComboBox>
-                        <JFXTextField fx:id="headTextField" labelFloat="true" promptText="%form.add.input.head">
-                            <VBox.margin>
-                                <Insets left="10.0" right="10.0" top="25.0"/>
-                            </VBox.margin>
-                        </JFXTextField>
                         <HBox alignment="CENTER" prefHeight="47.0" prefWidth="404.0" spacing="30.0">
                             <children>
                                 <JFXButton fx:id="saveButton" onAction="#addOrganization" prefHeight="66.0" prefWidth="100.0"

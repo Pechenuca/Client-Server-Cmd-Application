@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 public abstract class Command implements ICommand, Serializable {
-
+    private static final long serialVersionUID = 2901644046809010785L;
     protected String commandKey;
     protected String description = "No Description";
     protected String[] args;
